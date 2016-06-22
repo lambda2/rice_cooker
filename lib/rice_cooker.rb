@@ -1,0 +1,2 @@
+module RiceCooker
+end
