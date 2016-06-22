@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = RiceCooker::VERSION
   s.authors     = ["Andre Aubin"]
   s.email       = ["andre.aubin@lambdaweb.fr"]
-  s.homepage    = "TODO"
+  s.homepage    = "https://github.com/lambda2/rice_cooker"
   s.summary     = "A collection manager for Rails API's"
   s.description = "Handle pagination, sorting, filtering, searching, and ranging on Rails collections."
   s.license     = "MIT"
