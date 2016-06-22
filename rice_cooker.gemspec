@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency "rails", "~> 4.2.6"
   s.add_dependency 'kaminari', '~> 0.17.0'
   s.add_dependency 'api-pagination', '~> 4.3.0'
-  s.add_dependency 'has_scope', '0.7.0'
+  s.add_dependency 'has_scope', '~> 0.6'
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'rspec-rails', '~> 3.0'
