@@ -21,3 +21,5 @@ class CreateAllTables < ActiveRecord::Migration
 end
 ActiveRecord::Migration.verbose = false
 CreateAllTables.up
+
+[{login: "andre", email: "tata"}].each{|u| User.create!(u)}
