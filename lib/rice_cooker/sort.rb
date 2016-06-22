@@ -2,6 +2,8 @@ module RiceCooker
   module Sort
     extend ActiveSupport::Concern
 
+    include Helpers
+    
     SORT_PARAM = :sort
 
     # Will be thrown when invalid sort param

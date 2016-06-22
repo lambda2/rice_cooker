@@ -1,6 +1,10 @@
+require 'active_support'
+
 module RiceCooker
   module Filter
     extend ActiveSupport::Concern
+
+    include Helpers
 
     FILTER_PARAM = :filter
 
@@ -110,7 +114,7 @@ module RiceCooker
         additional_filtering_params = Filter::format_addtional_filtering_param(additional_filtering_params)
 
         # On recupere tous les filtres autorisés
-        allowed_keys = (resource_class.filterable_fields + additional_filtering_params.keys)
+        allowed_keys = (filterable_fields_for(resource_class) + additional_filtering_params.keys)
         
         # On fait une sorte de *register_bool_filter* sur tous les champs *_at
         additional = (resource_class.filterable_fields - [:created_at, :updated_at])

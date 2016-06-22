@@ -1,5 +1,9 @@
+require 'active_support'
+
 module RiceCooker
   module Helpers
+
+    extend ActiveSupport::Concern
 
     # From https://github.com/josevalim/inherited_resources/blob/master/lib/inherited_resources/class_methods.rb#L315
     def controller_resource_class(controller)
@@ -44,5 +48,23 @@ module RiceCooker
       end
       detected_resource_class
     end
+
+    def sortable_fields_for(model)
+      if model.respond_to?(:sortable_fields)
+        model.sortable_fields.map(&:to_sym)
+      else
+        model.column_names.map(&:to_sym)
+      end
+    end
+
+    # Overridable method for available filterable fields
+    def filterable_fields_for(model)
+      if model.respond_to?(:filterable_fields)
+        model.filterable_fields.map(&:to_sym)
+      else
+        model.column_names.map(&:to_sym)
+      end
+    end
+
   end
 end

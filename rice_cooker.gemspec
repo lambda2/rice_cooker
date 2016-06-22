@@ -24,7 +24,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'has_scope', '~> 0.6'
 
   s.add_development_dependency "sqlite3"
-  s.add_development_dependency 'rspec-rails', '~> 3.0'
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'rspec-activemodel-mocks'
   s.add_development_dependency 'mocha', '1.1.0'
   s.add_development_dependency 'ruby-prof', '0.15.8'
   s.add_development_dependency 'test-unit', '3.1.3'
