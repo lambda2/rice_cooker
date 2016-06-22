@@ -5,17 +5,18 @@ require "rice_cooker/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "rice_cooker"
-  s.version     = RiceCooker::VERSION
-  s.authors     = ["Andre Aubin"]
-  s.email       = ["andre.aubin@lambdaweb.fr"]
-  s.homepage    = "https://github.com/lambda2/rice_cooker"
-  s.summary     = "A collection manager for Rails API's"
-  s.description = "Handle pagination, sorting, filtering, searching, and ranging on Rails collections."
-  s.license     = "MIT"
+  s.name          = "rice_cooker"
+  s.version       = RiceCooker::VERSION
+  s.authors       = ["Andre Aubin"]
+  s.email         = ["andre.aubin@lambdaweb.fr"]
+  s.homepage      = "https://github.com/lambda2/rice_cooker"
+  s.summary       = "A collection manager for Rails API's"
+  s.description   = "Handle pagination, sorting, filtering, searching, and ranging on Rails collections."
+  s.license       = "MIT"
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
-  s.test_files = Dir["test/**/*"]
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.require_paths = ['lib']
 
   s.add_dependency "rails", "~> 4.2.6"
   s.add_dependency 'kaminari', '~> 0.17.0'
