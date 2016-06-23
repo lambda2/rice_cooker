@@ -8,7 +8,7 @@ module RiceCooker
   autoload :VERSION,  'rice_cooker/version'
 end
 
-class ActionController
+module ActionController
   class Base
     include RiceCooker::Sort
     include RiceCooker::Filter
