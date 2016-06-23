@@ -29,7 +29,7 @@ RSpec.describe RiceCooker::Filter do
     it "Null filtering" do
 
       # Default null filtering
-      filtering_params = RiceCooker::Filter::parse_filtering_param("", @allowed_params)
+      filtering_params = parse_filtering_param("", @allowed_params)
       expect(filtering_params).to be_eql({})
     end
 
@@ -39,7 +39,7 @@ RSpec.describe RiceCooker::Filter do
         login: "aaubin"
       })
 
-      filtering_params = RiceCooker::Filter::parse_filtering_param(params, @allowed_params)
+      filtering_params = parse_filtering_param(params, @allowed_params)
       expect(filtering_params).to be_eql({login: ["aaubin"]})
     end
 
@@ -49,7 +49,7 @@ RSpec.describe RiceCooker::Filter do
         login: "aaubin,qbollach"
       })
 
-      filtering_params = RiceCooker::Filter::parse_filtering_param(params, @allowed_params)
+      filtering_params = parse_filtering_param(params, @allowed_params)
       expect(filtering_params).to be_eql({login: ["aaubin", "qbollach"]})
     end
 
@@ -60,7 +60,7 @@ RSpec.describe RiceCooker::Filter do
         id: "74,75,76"
       })
 
-      filtering_params = RiceCooker::Filter::parse_filtering_param(params, @allowed_params)
+      filtering_params = parse_filtering_param(params, @allowed_params)
       expect(filtering_params).to be_eql({
         login: ["aaubin", "qbollach", "andre"],
         id: ["74", "75", "76"]
@@ -75,7 +75,7 @@ RSpec.describe RiceCooker::Filter do
         id: "74,75,76"
       })
 
-      expect { RiceCooker::Filter::parse_filtering_param(params, @allowed_params) }.to raise_error(RiceCooker::Filter::InvalidFilterException)
+      expect { parse_filtering_param(params, @allowed_params) }.to raise_error(RiceCooker::InvalidFilterException)
     end
   end
 
@@ -84,14 +84,14 @@ RSpec.describe RiceCooker::Filter do
 
 
     it "Default null filtering" do
-      filtered_collection = RiceCooker::Filter::apply_filter_to_collection(@collection, {})
+      filtered_collection = apply_filter_to_collection(@collection, {})
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/^((?!WHERE).)*$/)
     end
 
     it "Default filtering" do
 
-      filtered_collection = RiceCooker::Filter::apply_filter_to_collection(@collection, {login: ["aaubin"]})
+      filtered_collection = apply_filter_to_collection(@collection, {login: ["aaubin"]})
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/WHERE/)
       expect(filtered_collection.to_sql).to match(/"login" = 'aaubin'/)
@@ -99,7 +99,7 @@ RSpec.describe RiceCooker::Filter do
 
     it "Double filtering" do
       # Desc filtering
-      filtered_collection = RiceCooker::Filter::apply_filter_to_collection(@collection, {login: ["aaubin", "qbollach"]})
+      filtered_collection = apply_filter_to_collection(@collection, {login: ["aaubin", "qbollach"]})
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/WHERE/)
       expect(filtered_collection.to_sql).to match(/"login" IN \('aaubin', 'qbollach'\)/)
@@ -107,7 +107,7 @@ RSpec.describe RiceCooker::Filter do
 
     it "Multiple filtering" do
       # Desc filtering
-      filtered_collection = RiceCooker::Filter::apply_filter_to_collection(@collection, {
+      filtered_collection = apply_filter_to_collection(@collection, {
         login: ["aaubin", "qbollach", "andre"],
         id: ["74", "75", "76"]
       })
@@ -123,13 +123,13 @@ RSpec.describe RiceCooker::Filter do
 
 
     it "Default null filtering" do
-      filtered_collection = RiceCooker::Filter::apply_filter_to_collection(@collection, {}, @test_filter)
+      filtered_collection = apply_filter_to_collection(@collection, {}, @test_filter)
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/^((?!WHERE).)*$/)
     end
 
     it "Default filtering" do
-      filtered_collection = RiceCooker::Filter::apply_filter_to_collection(@collection, {with_the_letter: ["a"]}, @test_filter)
+      filtered_collection = apply_filter_to_collection(@collection, {with_the_letter: ["a"]}, @test_filter)
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/WHERE/)
       expect(filtered_collection.to_sql).to match(/ILIKE/)
@@ -137,7 +137,7 @@ RSpec.describe RiceCooker::Filter do
 
     it "Double filtering" do
       # Desc filtering
-      filtered_collection = RiceCooker::Filter::apply_filter_to_collection(@collection, {with_the_letter: ["a"], without_the_letter: ["l"]}, @test_filter)
+      filtered_collection = apply_filter_to_collection(@collection, {with_the_letter: ["a"], without_the_letter: ["l"]}, @test_filter)
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/WHERE/)
       expect(filtered_collection.to_sql).to match(/first_name ILIKE '%a%'/)
@@ -146,7 +146,7 @@ RSpec.describe RiceCooker::Filter do
 
     it "Multiple filtering" do
       # Desc filtering
-      filtered_collection = RiceCooker::Filter::apply_filter_to_collection(@collection, {
+      filtered_collection = apply_filter_to_collection(@collection, {
         login: ["aaubin", "qbollach", "andre"],
         id: ["74", "75", "76"]
       })
@@ -159,12 +159,12 @@ RSpec.describe RiceCooker::Filter do
     it "invalid args" do
       # invalid args
       expect do
-        RiceCooker::Filter::apply_filter_to_collection(
+        apply_filter_to_collection(
           @collection,
           {sorted: ["true", "baguette"]},
-          RiceCooker::Filter::format_addtional_filtering_param({sorted: [-> (v) { v }, ["true", "false", "maybe"]]})
+          format_addtional_filtering_param({sorted: [-> (v) { v }, ["true", "false", "maybe"]]})
         )
-      end.to raise_error(RiceCooker::Filter::InvalidFilterValueException)
+      end.to raise_error(RiceCooker::InvalidFilterValueException)
     end
   end
 
@@ -172,7 +172,7 @@ RSpec.describe RiceCooker::Filter do
     
 
     it "No additional params" do
-      formated = RiceCooker::Filter::format_addtional_filtering_param({})
+      formated = format_addtional_filtering_param({})
       expect(formated).to be_eql({})
     end
 
@@ -182,7 +182,7 @@ RSpec.describe RiceCooker::Filter do
         all: [1, 2, 3],
         description: "A good filter"
       }}
-      formated = RiceCooker::Filter::format_addtional_filtering_param(p)
+      formated = format_addtional_filtering_param(p)
       expect(formated).to be_eql(p)
     end
 
@@ -196,7 +196,7 @@ RSpec.describe RiceCooker::Filter do
         all: [1, 2, 3],
         description: ""
       }}
-      formated = RiceCooker::Filter::format_addtional_filtering_param(p)
+      formated = format_addtional_filtering_param(p)
       expect(formated).to be_eql(expected)
     end
 
@@ -209,7 +209,7 @@ RSpec.describe RiceCooker::Filter do
         all: [],
         description: ""
       }}
-      formated = RiceCooker::Filter::format_addtional_filtering_param(p)
+      formated = format_addtional_filtering_param(p)
       expect(formated).to be_eql(expected)
     end
 
@@ -221,7 +221,7 @@ RSpec.describe RiceCooker::Filter do
         all: @all,
         description: ""
       }}
-      formated = RiceCooker::Filter::format_addtional_filtering_param(p)
+      formated = format_addtional_filtering_param(p)
       expect(formated).to be_eql(expected)
     end
 
@@ -256,7 +256,7 @@ RSpec.describe RiceCooker::Filter do
           description: "Buuuuh"
         }
       }
-      formated = RiceCooker::Filter::format_addtional_filtering_param(p)
+      formated = format_addtional_filtering_param(p)
       expect(formated).to be_eql(expected)
     end
 
