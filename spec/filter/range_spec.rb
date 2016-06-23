@@ -11,12 +11,12 @@ RSpec.describe RiceCooker::Range do
     @collection = @collection_class.all
 
     @test_filter = {
-      with_the_letter: {proc: -> (value) {where('first_name ILIKE ?', value.map{|e| "%#{e}%"})}},
-      without_the_letter: {proc: -> (value) {where.not('first_name ILIKE ?', value.map{|e| "%#{e}%"})}}
+      with_the_letter: { proc: -> (value) { where('first_name ILIKE ?', value.map { |e| "%#{e}%" }) } },
+      without_the_letter: { proc: -> (value) { where.not('first_name ILIKE ?', value.map { |e| "%#{e}%" }) } }
     }
 
     @proc = -> (value) { value }
-    @all = -> (value) { [1, 2, 3] }
+    @all = -> (_value) { [1, 2, 3] }
   end
 
   describe 'Range params must be okay' do
@@ -27,32 +27,30 @@ RSpec.describe RiceCooker::Range do
     end
 
     it 'Default ranged' do
-      params = ({
+      params = {
         id: '1,5'
-      })
+      }
       ranged_params = parse_ranged_param(params, @allowed_params)
-      expect(ranged_params).to be_eql({id: ['1', '5']})
+      expect(ranged_params).to be_eql(id: %w(1 5))
     end
 
     it 'Multiple ranged' do
-      params = ({
+      params = {
         login: 'aaubin,bobol',
         id: '4,5'
-      })
+      }
       ranged_params = parse_ranged_param(params, @allowed_params)
-      expect(ranged_params).to be_eql({
-              login: ['aaubin', 'bobol'],
-              id: ['4', '5']
-            })
+      expect(ranged_params).to be_eql(login: %w(aaubin bobol),
+                                      id: %w(4 5))
     end
 
     it 'too many args' do
       # invalid args
 
-      params = ({
+      params = {
         wtf: 'aaubin,qbollach,andre',
         id: '74,75,76'
-      })
+      }
 
       expect { parse_ranged_param(params, @allowed_params) }.to raise_error(RiceCooker::InvalidRangeException)
     end
@@ -60,17 +58,16 @@ RSpec.describe RiceCooker::Range do
     it 'too few args' do
       # invalid args
 
-      params = ({
+      params = {
         wtf: 'aaubin',
         id: '74'
-      })
+      }
 
       expect { parse_ranged_param(params, @allowed_params) }.to raise_error(RiceCooker::InvalidRangeException)
     end
   end
 
   describe 'Must apply range to given collection' do
-
     it 'Default null ranged' do
       ranged_collection = apply_range_to_collection(@collection, {})
       # puts ranged_collection.to_sql
@@ -78,7 +75,7 @@ RSpec.describe RiceCooker::Range do
     end
 
     it 'Default ranged' do
-      ranged_collection = apply_range_to_collection(@collection, {login: ['aaubin', 'qbollach']})
+      ranged_collection = apply_range_to_collection(@collection, login: %w(aaubin qbollach))
       puts ranged_collection.to_sql
       expect(ranged_collection.to_sql).to match(/BETWEEN/)
       expect(ranged_collection.to_sql).to match(/'aaubin'/)
@@ -86,7 +83,7 @@ RSpec.describe RiceCooker::Range do
 
     it 'Double ranged' do
       # Desc ranged
-      ranged_collection = apply_range_to_collection(@collection, {login: ['aaubin', 'qbollach'], id: [1, 2]})
+      ranged_collection = apply_range_to_collection(@collection, login: %w(aaubin qbollach), id: [1, 2])
       # puts ranged_collection.to_sql
       expect(ranged_collection.to_sql).to match(/BETWEEN/)
       expect(ranged_collection.to_sql).to match(/'aaubin'/)
@@ -95,17 +92,13 @@ RSpec.describe RiceCooker::Range do
     it 'Invalid ranged' do
       # Desc ranged
       expect do
-        ranged_collection = apply_range_to_collection(@collection, {
-          login: ['aaubin', 'qbollach', 'andre'],
-          id: ['74']
-        })
+        ranged_collection = apply_range_to_collection(@collection, login: %w(aaubin qbollach andre),
+                                                                   id: ['74'])
       end.to raise_error(RiceCooker::InvalidRangeValueException)
     end
   end
 
   # describe 'Must apply custom filters to given collection' do
-
-
 
   #   it 'Default null ranged' do
   #     filtered_collection = apply_filter_to_collection(@collection, {}, @test_filter)
@@ -154,7 +147,6 @@ RSpec.describe RiceCooker::Range do
   # end
 
   # describe 'Additional params must be correctly formated' do
-    
 
   #   it 'No additional params' do
   #     formated = format_addtional_ranged_param({})
@@ -185,7 +177,6 @@ RSpec.describe RiceCooker::Range do
   #     expect(formated).to be_eql(expected)
   #   end
 
-
   #   it 'Only proc additional params' do
 
   #     p = {filter: @proc}
@@ -209,7 +200,6 @@ RSpec.describe RiceCooker::Range do
   #     formated = format_addtional_ranged_param(p)
   #     expect(formated).to be_eql(expected)
   #   end
-
 
   #   it 'Multiple, std + Array with proc and all additional params' do
 
@@ -245,37 +235,28 @@ RSpec.describe RiceCooker::Range do
   #     expect(formated).to be_eql(expected)
   #   end
 
-
   # end
-
-
 end
 
-
-
-
 RSpec.describe UsersController, type: :controller do
-  
   include RiceCooker::Helpers
 
   before { request.host = 'example.org' }
 
   describe 'GET #index' do
-
     it 'without range parameter' do
       get :index, range: '', format: :json
       expect(response.body).to eq(User.all.order(id: :desc).to_json)
     end
 
     it 'with simple range parameter' do
-      get :index, range: {login: 'aaubin,qbollach'}, format: :json
+      get :index, range: { login: 'aaubin,qbollach' }, format: :json
       expect(response.body).to eq(User.where(login: 'aaubin'..'qbollach').order(id: :desc).to_json)
     end
 
     it 'with multiple range parameter' do
-      get :index, range: {login: 'aaubin,qbollach', id: '1,5'}, format: :json
+      get :index, range: { login: 'aaubin,qbollach', id: '1,5' }, format: :json
       expect(response.body).to eq(User.where(login: 'aaubin'..'qbollach', id: 1..5).order(id: :desc).to_json)
     end
   end
-
 end

@@ -3,7 +3,6 @@ require 'ostruct'
 require 'has_scope'
 
 module Rails
-
   def self.application
     @application ||= begin
       routes = ActionDispatch::Routing::RouteSet.new
@@ -13,7 +12,6 @@ module Rails
 end
 
 module ControllerExampleGroup
-
   def self.included(base)
     base.extend ClassMethods
     base.send(:include, ActionController::TestCase::Behavior)
@@ -25,7 +23,6 @@ module ControllerExampleGroup
   end
 
   module ClassMethods
-
     def setup(*methods)
       methods.each do |method|
         if method.to_s =~ /^setup_(fixtures|controller_request_and_response)$/
@@ -43,7 +40,7 @@ module ControllerExampleGroup
 end
 
 Rails.application.routes.draw do
-  resources :users, :only => [:index]
+  resources :users, only: [:index]
 end
 
 class UsersController < ActionController::Base

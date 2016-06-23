@@ -15,7 +15,6 @@ RSpec.describe RiceCooker::Sort do
 
   describe 'Sort params must be okay' do
     it 'Default null sorting' do
-
       # Default null sorting
       sorting_params = parse_sorting_param('', @collection_class)
       expect(sorting_params).to be_eql({})
@@ -24,24 +23,24 @@ RSpec.describe RiceCooker::Sort do
     it 'Default asc sorting' do
       # Default asc sorting
       sorting_params = parse_sorting_param('id', @collection_class)
-      expect(sorting_params).to be_eql({id: :asc})
+      expect(sorting_params).to be_eql(id: :asc)
     end
 
     it 'Desc sorting' do
       # Desc sorting
       sorting_params = parse_sorting_param('-id', @collection_class)
-      expect(sorting_params).to be_eql({id: :desc})
+      expect(sorting_params).to be_eql(id: :desc)
     end
 
     it 'Same param sorting' do
       sorting_params = parse_sorting_param('-id,id', @collection_class)
-      expect(sorting_params).to be_eql({id: :asc})
+      expect(sorting_params).to be_eql(id: :asc)
     end
 
     it 'Multiple args' do
       # Multiple args
       sorting_params = parse_sorting_param('-login,id', @collection_class)
-      expect(sorting_params).to be_eql({login: :desc, id: :asc})
+      expect(sorting_params).to be_eql(login: :desc, id: :asc)
     end
 
     it 'invalid args' do
@@ -51,8 +50,6 @@ RSpec.describe RiceCooker::Sort do
   end
 
   describe 'Must apply sort to given collection' do
-
-
     it 'Default null sorting' do
       # Default null sorting
       sorted_collection = apply_sort_to_collection(@collection, {})
@@ -61,21 +58,21 @@ RSpec.describe RiceCooker::Sort do
 
     it 'Default asc sorting' do
       # Default asc sorting
-      sorted_collection = apply_sort_to_collection(@collection, { id: :asc })
+      sorted_collection = apply_sort_to_collection(@collection, id: :asc)
       expect(sorted_collection.to_sql).to match(/ORDER/)
       expect(sorted_collection.to_sql).to match(/"id" ASC/)
     end
 
     it 'Desc sorting' do
       # Desc sorting
-      sorted_collection = apply_sort_to_collection(@collection, { id: :desc })
+      sorted_collection = apply_sort_to_collection(@collection, id: :desc)
       expect(sorted_collection.to_sql).to match(/ORDER/)
       expect(sorted_collection.to_sql).to match(/"id" DESC/)
     end
 
     it 'Same param sorting' do
       # Desc sorting
-      sorted_collection = apply_sort_to_collection(@collection, { id: :asc })
+      sorted_collection = apply_sort_to_collection(@collection, id: :asc)
       expect(sorted_collection.to_sql).to match(/ORDER/)
       expect(sorted_collection.to_sql).to match(/^((?!DESC).)*$/)
       expect(sorted_collection.to_sql).to match(/"id" ASC/)
@@ -83,7 +80,7 @@ RSpec.describe RiceCooker::Sort do
 
     it 'Multiple args' do
       # Multiple args
-      sorted_collection = apply_sort_to_collection(@collection, { login: :desc, id: :asc })
+      sorted_collection = apply_sort_to_collection(@collection, login: :desc, id: :asc)
       expect(sorted_collection.to_sql).to match(/ORDER/)
       expect(sorted_collection.to_sql).to match(/"login" DESC/)
       expect(sorted_collection.to_sql).to match(/"id" ASC/)
@@ -91,14 +88,12 @@ RSpec.describe RiceCooker::Sort do
   end
 end
 
-
 RSpec.describe UsersController, type: :controller do
   include RiceCooker::Helpers
 
   before { request.host = 'example.org' }
 
   describe 'GET #index' do
-
     it 'without sort parameter' do
       get :index, sort: '', format: :json
       expect(response.body).to eq(User.all.to_json)
@@ -119,5 +114,4 @@ RSpec.describe UsersController, type: :controller do
       expect(response.body).to eq(User.all.order(:login, id: :desc).to_json)
     end
   end
-
 end
