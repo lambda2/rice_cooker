@@ -61,6 +61,7 @@ module RiceCooker
       detected_resource_class
     end
 
+    # Overridable method for available sortable fields
     def sortable_fields_for(model)
       if model.respond_to?(:sortable_fields)
         model.sortable_fields.map(&:to_sym)
