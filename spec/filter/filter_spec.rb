@@ -1,4 +1,4 @@
-require "pry"
+require 'pry'
 require 'rice_cooker'
 require 'active_record'
 require 'spec_helper'
@@ -24,92 +24,90 @@ RSpec.describe RiceCooker::Filter do
   end
 
 
-  describe "Filter params must be okay" do
+  describe 'Filter params must be okay' do
 
-    it "Null filtering" do
+    it 'Null filtering' do
 
       # Default null filtering
-      filtering_params = parse_filtering_param("", @allowed_params)
+      filtering_params = parse_filtering_param('', @allowed_params)
       expect(filtering_params).to be_eql({})
     end
 
-    it "Default filtering" do
+    it 'Default filtering' do
 
       params = ({
-        login: "aaubin"
+        login: 'aaubin'
       })
 
       filtering_params = parse_filtering_param(params, @allowed_params)
-      expect(filtering_params).to be_eql({login: ["aaubin"]})
+      expect(filtering_params).to be_eql({login: ['aaubin']})
     end
 
-    it "Double filtering" do
+    it 'Double filtering' do
 
       params = ({
-        login: "aaubin,qbollach"
+        login: 'aaubin,qbollach'
       })
 
       filtering_params = parse_filtering_param(params, @allowed_params)
-      expect(filtering_params).to be_eql({login: ["aaubin", "qbollach"]})
+      expect(filtering_params).to be_eql({login: ['aaubin', 'qbollach']})
     end
 
-    it "Multiple filtering" do
+    it 'Multiple filtering' do
 
       params = ({
-        login: "aaubin,qbollach,andre",
-        id: "74,75,76"
+        login: 'aaubin,qbollach,andre',
+        id: '74,75,76'
       })
 
       filtering_params = parse_filtering_param(params, @allowed_params)
       expect(filtering_params).to be_eql({
-        login: ["aaubin", "qbollach", "andre"],
-        id: ["74", "75", "76"]
+        login: ['aaubin', 'qbollach', 'andre'],
+        id: ['74', '75', '76']
       })
     end
 
-    it "invalid args" do
+    it 'invalid args' do
       # invalid args
 
       params = ({
-        wtf: "aaubin,qbollach,andre",
-        id: "74,75,76"
+        wtf: 'aaubin,qbollach,andre',
+        id: '74,75,76'
       })
 
       expect { parse_filtering_param(params, @allowed_params) }.to raise_error(RiceCooker::InvalidFilterException)
     end
   end
 
-  describe "Must apply filter to given collection" do
+  describe 'Must apply filter to given collection' do
 
-
-
-    it "Default null filtering" do
+    it 'Default null filtering' do
       filtered_collection = apply_filter_to_collection(@collection, {})
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/^((?!WHERE).)*$/)
     end
 
-    it "Default filtering" do
+    it 'Default filtering' do
 
-      filtered_collection = apply_filter_to_collection(@collection, {login: ["aaubin"]})
+      filtered_collection = apply_filter_to_collection(@collection, {login: ['aaubin']})
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/WHERE/)
       expect(filtered_collection.to_sql).to match(/"login" = 'aaubin'/)
     end
 
-    it "Double filtering" do
+    it 'Double filtering' do
       # Desc filtering
-      filtered_collection = apply_filter_to_collection(@collection, {login: ["aaubin", "qbollach"]})
+      filtered_collection = apply_filter_to_collection(@collection, {login: ['aaubin', 'qbollach']})
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/WHERE/)
       expect(filtered_collection.to_sql).to match(/"login" IN \('aaubin', 'qbollach'\)/)
     end
 
-    it "Multiple filtering" do
+    it 'Multiple filtering' do
       # Desc filtering
       filtered_collection = apply_filter_to_collection(@collection, {
-        login: ["aaubin", "qbollach", "andre"],
-        id: ["74", "75", "76"]
+        login: ['aaubin', 'qbollach', 'andre'],
+        id: ['74', '75', '76']
       })
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/WHERE/)
@@ -118,37 +116,35 @@ RSpec.describe RiceCooker::Filter do
     end
   end
 
-  describe "Must apply custom filters to given collection" do
+  describe 'Must apply custom filters to given collection' do
 
-
-
-    it "Default null filtering" do
+    it 'Default null filtering' do
       filtered_collection = apply_filter_to_collection(@collection, {}, @test_filter)
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/^((?!WHERE).)*$/)
     end
 
-    it "Default filtering" do
-      filtered_collection = apply_filter_to_collection(@collection, {with_the_letter: ["a"]}, @test_filter)
+    it 'Default filtering' do
+      filtered_collection = apply_filter_to_collection(@collection, {with_the_letter: ['a']}, @test_filter)
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/WHERE/)
       expect(filtered_collection.to_sql).to match(/ILIKE/)
     end
 
-    it "Double filtering" do
+    it 'Double filtering' do
       # Desc filtering
-      filtered_collection = apply_filter_to_collection(@collection, {with_the_letter: ["a"], without_the_letter: ["l"]}, @test_filter)
+      filtered_collection = apply_filter_to_collection(@collection, {with_the_letter: ['a'], without_the_letter: ['l']}, @test_filter)
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/WHERE/)
       expect(filtered_collection.to_sql).to match(/first_name ILIKE '%a%'/)
       expect(filtered_collection.to_sql).to match(/NOT \(first_name ILIKE '%l%'\)/)
     end
 
-    it "Multiple filtering" do
+    it 'Multiple filtering' do
       # Desc filtering
       filtered_collection = apply_filter_to_collection(@collection, {
-        login: ["aaubin", "qbollach", "andre"],
-        id: ["74", "75", "76"]
+        login: ['aaubin', 'qbollach', 'andre'],
+        id: ['74', '75', '76']
       })
       # puts filtered_collection.to_sql
       expect(filtered_collection.to_sql).to match(/WHERE/)
@@ -156,37 +152,36 @@ RSpec.describe RiceCooker::Filter do
       expect(filtered_collection.to_sql).to match(/AND/)
     end
 
-    it "invalid args" do
+    it 'invalid args' do
       # invalid args
       expect do
         apply_filter_to_collection(
           @collection,
-          {sorted: ["true", "baguette"]},
-          format_addtional_filtering_param({sorted: [-> (v) { v }, ["true", "false", "maybe"]]})
+          {sorted: ['true', 'baguette']},
+          format_addtional_filtering_param({sorted: [-> (v) { v }, ['true', 'false', 'maybe']]})
         )
       end.to raise_error(RiceCooker::InvalidFilterValueException)
     end
   end
 
-  describe "Additional params must be correctly formated" do
-    
+  describe 'Additional params must be correctly formated' do
 
-    it "No additional params" do
+    it 'No additional params' do
       formated = format_addtional_filtering_param({})
       expect(formated).to be_eql({})
     end
 
-    it "Already correctly formatted additional params" do
+    it 'Already correctly formatted additional params' do
       p = {filter: {
         proc: @proc,
         all: [1, 2, 3],
-        description: "A good filter"
+        description: 'A good filter'
       }}
       formated = format_addtional_filtering_param(p)
       expect(formated).to be_eql(p)
     end
 
-    it "Missing description additional params" do
+    it 'Missing description additional params' do
       p = {filter: {
         proc: @proc,
         all: [1, 2, 3]
@@ -194,66 +189,64 @@ RSpec.describe RiceCooker::Filter do
       expected = {filter: {
         proc: @proc,
         all: [1, 2, 3],
-        description: ""
+        description: ''
       }}
       formated = format_addtional_filtering_param(p)
       expect(formated).to be_eql(expected)
     end
 
-
-    it "Only proc additional params" do
+    it 'Only proc additional params' do
 
       p = {filter: @proc}
       expected = {filter: {
         proc: @proc,
         all: [],
-        description: ""
+        description: ''
       }}
       formated = format_addtional_filtering_param(p)
       expect(formated).to be_eql(expected)
     end
 
-    it "Array with proc and all additional params" do
+    it 'Array with proc and all additional params' do
 
       p = {filter: [@proc, @all]}
       expected = {filter: {
         proc: @proc,
         all: @all,
-        description: ""
+        description: ''
       }}
       formated = format_addtional_filtering_param(p)
       expect(formated).to be_eql(expected)
     end
 
-
-    it "Multiple, std + Array with proc and all additional params" do
+    it 'Multiple, std + Array with proc and all additional params' do
 
       p = {
         tata: @proc,
         toto: {proc: @proc, all: [1, 2]},
         filter: [@proc, @all],
-        tutu: {proc: @proc, description: "Buuuuh"}
+        tutu: {proc: @proc, description: 'Buuuuh'}
       }
       expected = {
         tata: {
           proc: @proc,
           all: [],
-          description: ""
+          description: ''
         },
         toto: {
           proc: @proc,
           all: [1, 2],
-          description: ""
+          description: ''
         },
         filter: {
           proc: @proc,
           all: @all,
-          description: ""
+          description: ''
         },
         tutu: {
           proc: @proc,
           all: [],
-          description: "Buuuuh"
+          description: 'Buuuuh'
         }
       }
       formated = format_addtional_filtering_param(p)
@@ -264,7 +257,7 @@ end
 
 
 
-RSpec.describe UsersController, :type => :controller do
+RSpec.describe UsersController, type: :controller do
   
   include RiceCooker::Helpers
 
@@ -273,22 +266,22 @@ RSpec.describe UsersController, :type => :controller do
   describe 'GET #index' do
 
     it 'without filter parameter' do
-      get :index, :filter => '', format: :json
+      get :index, filter: '', format: :json
       expect(response.body).to eq(User.all.order(id: :desc).to_json)
     end
 
     it 'with simple filter parameter' do
-      get :index, :filter => {login: 'aaubin'}, format: :json
+      get :index, filter: {login: 'aaubin'}, format: :json
       expect(response.body).to eq(User.where(login: 'aaubin').order(id: :desc).to_json)
     end
 
     it 'with double filter parameter' do
-      get :index, :filter => {login: 'aaubin,qbollach'}, format: :json
+      get :index, filter: {login: 'aaubin,qbollach'}, format: :json
       expect(response.body).to eq(User.where(login: ['aaubin', 'qbollach']).order(id: :desc).to_json)
     end
 
     it 'with double and multiple filter parameter' do
-      get :index, :filter => {login: 'aaubin,qbollach', email: 'tata'}, format: :json
+      get :index, filter: {login: 'aaubin,qbollach', email: 'tata'}, format: :json
       expect(response.body).to eq(User.where(login: ['aaubin', 'qbollach'], email: 'tata').order(id: :desc).to_json)
     end
   end

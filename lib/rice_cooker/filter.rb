@@ -4,14 +4,12 @@ module RiceCooker
   module Filter
     extend ActiveSupport::Concern
 
-
     FILTER_PARAM = :filter
-
 
     module ClassMethods
 
       include Helpers
-      
+
       def filtered additional_filtering_params = {}
         cattr_accessor :filtering_keys
         cattr_accessor :custom_filters
@@ -28,10 +26,6 @@ module RiceCooker
         additional = (filterable_fields_for(resource_class) - [:created_at, :updated_at])
           .select{|e| e =~ /_at$/}
           .select{|e| additional_filtering_params[e.to_s.gsub(/_at$/, '')].nil?}
-      
-        # if additional.any?
-        #   p "[!] Controller #{self.name} can be graphed on attributes: #{additional.map(&:to_sym).inspect}"
-        # end
 
         additional.each do |fi|
             name = fi.to_s.gsub(/_at$/, '')
@@ -46,7 +40,7 @@ module RiceCooker
               allowed_keys << :future
             else
               additional_filtering_params[name.to_sym] = {
-                proc: -> (value) {value.first == "true" ? where.not(fi => nil) : where(fi => nil) },
+                proc: -> (value) {value.first == 'true' ? where.not(fi => nil) : where(fi => nil) },
                 all: ['true', 'false'],
                 description: "Return only #{name} #{resource_class.to_s.underscore.humanize.downcase.pluralize}"
               }
@@ -102,7 +96,5 @@ module RiceCooker
       end
 
     end
-
-
   end
 end

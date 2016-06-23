@@ -1,16 +1,10 @@
-
 class User < ActiveRecord::Base
-
   has_many :comments
-
 end
 
 class Comment < ActiveRecord::Base
-
   belongs_to :user
-
 end
-
 
 #migrations
 class CreateAllTables < ActiveRecord::Migration
@@ -19,6 +13,7 @@ class CreateAllTables < ActiveRecord::Migration
     create_table(:comments) {|t| t.integer :user_id; t.string :content}
   end
 end
+
 ActiveRecord::Migration.verbose = false
 CreateAllTables.up
 
