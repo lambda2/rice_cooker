@@ -86,7 +86,6 @@ module RiceCooker
       return collection if collection.blank?
 
       filtering_params.each do |field, value|
-        p "Laaaaa !, #{field}:#{value}, #{collection}"
         if additional.has_key?(field) and additional[field].has_key?(:proc)
           
           # Si on a fourni des valeurs, on verifie qu'elle matchent
@@ -97,7 +96,6 @@ module RiceCooker
 
           collection = collection.instance_exec(value, &(additional[field][:proc]))
         elsif value.is_a? String or value.is_a? Array
-          p "Laaaaa !, #{value}, #{collection}"
           collection = collection.where(field => value)
         elsif value.is_a? Hash and value.has_key? :proc
           collection

@@ -247,7 +247,7 @@ RSpec.describe RiceCooker::Filter do
         },
         filter: {
           proc: @proc,
-          all: !all,
+          all: @all,
           description: ""
         },
         tutu: {
