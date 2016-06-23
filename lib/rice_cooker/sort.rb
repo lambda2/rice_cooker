@@ -25,7 +25,12 @@ module RiceCooker
           
           cattr_accessor :default_order
           cattr_accessor :sorted_keys
-          return unless self.sorted_keys.nil?
+
+          resource_class ||= controller_resource_class(self) unless self.respond_to?(:resource_class)
+
+          return unless self.sorted_keys.nil? || resource_class.nil?
+
+
 
           default_sorting_params = {default_sorting_params => :asc} if default_sorting_params.is_a? Symbol
           

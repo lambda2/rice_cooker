@@ -1,3 +1,5 @@
+require 'action_controller'
+
 module RiceCooker
 
   autoload :Helpers,  'rice_cooker/helpers'
@@ -5,4 +7,11 @@ module RiceCooker
   autoload :Sort,     'rice_cooker/sort'
   autoload :Range,    'rice_cooker/range'
   autoload :VERSION,  'rice_cooker/version'
+end
+
+
+class ActionController::Base
+  include RiceCooker::Sort
+  include RiceCooker::Filter
+  include RiceCooker::Range
 end

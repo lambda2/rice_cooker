@@ -259,9 +259,38 @@ RSpec.describe RiceCooker::Filter do
       formated = format_addtional_filtering_param(p)
       expect(formated).to be_eql(expected)
     end
-
-
   end
+end
 
+
+
+RSpec.describe UsersController, :type => :controller do
+  
+  include RiceCooker::Helpers
+
+  before { request.host = 'example.org' }
+
+  describe 'GET #index' do
+
+    it 'without filter parameter' do
+      get :index, :filter => '', format: :json
+      expect(response.body).to eq(User.all.order(id: :desc).to_json)
+    end
+
+    it 'with simple filter parameter' do
+      get :index, :filter => {login: 'aaubin'}, format: :json
+      expect(response.body).to eq(User.where(login: 'aaubin').order(id: :desc).to_json)
+    end
+
+    it 'with double filter parameter' do
+      get :index, :filter => {login: 'aaubin,qbollach'}, format: :json
+      expect(response.body).to eq(User.where(login: ['aaubin', 'qbollach']).order(id: :desc).to_json)
+    end
+
+    it 'with double and multiple filter parameter' do
+      get :index, :filter => {login: 'aaubin,qbollach', email: 'tata'}, format: :json
+      expect(response.body).to eq(User.where(login: ['aaubin', 'qbollach'], email: 'tata').order(id: :desc).to_json)
+    end
+  end
 
 end

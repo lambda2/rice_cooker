@@ -16,6 +16,8 @@ module RiceCooker
         cattr_accessor :filtering_keys
         cattr_accessor :custom_filters
 
+        resource_class ||= controller_resource_class(self) unless self.respond_to?(:resource_class)
+
         # On normalize tout ca
         additional_filtering_params = format_addtional_filtering_param(additional_filtering_params)
 
@@ -23,7 +25,7 @@ module RiceCooker
         allowed_keys = (filterable_fields_for(resource_class) + additional_filtering_params.keys)
         
         # On fait une sorte de *register_bool_filter* sur tous les champs *_at
-        additional = (resource_class.filterable_fields - [:created_at, :updated_at])
+        additional = (filterable_fields_for(resource_class) - [:created_at, :updated_at])
           .select{|e| e =~ /_at$/}
           .select{|e| additional_filtering_params[e.to_s.gsub(/_at$/, '')].nil?}
       

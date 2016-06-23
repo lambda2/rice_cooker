@@ -16,6 +16,8 @@ module RiceCooker
         cattr_accessor :ranged_keys
         cattr_accessor :custom_ranges
 
+        resource_class ||= controller_resource_class(self) unless self.respond_to?(:resource_class)
+
         # On normalize tout ca
         additional_ranged_params = format_addtional_ranged_param(additional_ranged_params)
 
