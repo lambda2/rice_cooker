@@ -4,13 +4,14 @@ module RiceCooker
   module Filter
     extend ActiveSupport::Concern
 
-    include Helpers
 
     FILTER_PARAM = :filter
 
 
     module ClassMethods
 
+      include Helpers
+      
       def filtered additional_filtering_params = {}
         cattr_accessor :filtering_keys
         cattr_accessor :custom_filters

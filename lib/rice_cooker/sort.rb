@@ -5,12 +5,13 @@ module RiceCooker
   module Sort
     extend ActiveSupport::Concern
 
-    include Helpers
 
     SORT_PARAM = :sort
 
 
     module ClassMethods
+
+      include Helpers
 
       # 
       # Will handle collection (index) sorting on inherited resource controllers
@@ -41,7 +42,7 @@ module RiceCooker
             end
             scope
           end
-          
+
         rescue NoMethodError => e
           "Just wanna die ⚓️ #{e}"
         end
