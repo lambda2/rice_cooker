@@ -1,13 +1,9 @@
-require 'pry'
 require 'rice_cooker'
 require 'active_record'
 require 'spec_helper'
 
 RSpec.describe RiceCooker::Range do
-
   include RiceCooker::Helpers
-
-  # class User < ActiveRecord::Base; end
 
   before do
     @collection_class = User
@@ -23,38 +19,31 @@ RSpec.describe RiceCooker::Range do
     @all = -> (value) { [1, 2, 3] }
   end
 
-
   describe 'Range params must be okay' do
-
     it 'Null ranged' do
-
       # Default null ranged
       ranged_params = parse_ranged_param('', @allowed_params)
       expect(ranged_params).to be_eql({})
     end
 
     it 'Default ranged' do
-
       params = ({
         id: '1,5'
       })
-
       ranged_params = parse_ranged_param(params, @allowed_params)
       expect(ranged_params).to be_eql({id: ['1', '5']})
     end
 
     it 'Multiple ranged' do
-
       params = ({
         login: 'aaubin,bobol',
         id: '4,5'
       })
-
       ranged_params = parse_ranged_param(params, @allowed_params)
       expect(ranged_params).to be_eql({
-        login: ['aaubin', 'bobol'],
-        id: ['4', '5']
-      })
+              login: ['aaubin', 'bobol'],
+              id: ['4', '5']
+            })
     end
 
     it 'too many args' do

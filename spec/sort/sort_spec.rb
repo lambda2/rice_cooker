@@ -56,14 +56,12 @@ RSpec.describe RiceCooker::Sort do
     it 'Default null sorting' do
       # Default null sorting
       sorted_collection = apply_sort_to_collection(@collection, {})
-      puts sorted_collection.to_sql
       expect(sorted_collection.to_sql).to match(/^((?!ORDER).)*$/)
     end
 
     it 'Default asc sorting' do
       # Default asc sorting
       sorted_collection = apply_sort_to_collection(@collection, { id: :asc })
-      puts sorted_collection.to_sql
       expect(sorted_collection.to_sql).to match(/ORDER/)
       expect(sorted_collection.to_sql).to match(/"id" ASC/)
     end
@@ -71,7 +69,6 @@ RSpec.describe RiceCooker::Sort do
     it 'Desc sorting' do
       # Desc sorting
       sorted_collection = apply_sort_to_collection(@collection, { id: :desc })
-      puts sorted_collection.to_sql
       expect(sorted_collection.to_sql).to match(/ORDER/)
       expect(sorted_collection.to_sql).to match(/"id" DESC/)
     end
@@ -79,7 +76,6 @@ RSpec.describe RiceCooker::Sort do
     it 'Same param sorting' do
       # Desc sorting
       sorted_collection = apply_sort_to_collection(@collection, { id: :asc })
-      puts sorted_collection.to_sql
       expect(sorted_collection.to_sql).to match(/ORDER/)
       expect(sorted_collection.to_sql).to match(/^((?!DESC).)*$/)
       expect(sorted_collection.to_sql).to match(/"id" ASC/)
@@ -87,8 +83,7 @@ RSpec.describe RiceCooker::Sort do
 
     it 'Multiple args' do
       # Multiple args
-      sorted_collection = apply_sort_to_collection(@collection, { login: :desc, id: :asc )
-      puts sorted_collection.to_sql
+      sorted_collection = apply_sort_to_collection(@collection, { login: :desc, id: :asc })
       expect(sorted_collection.to_sql).to match(/ORDER/)
       expect(sorted_collection.to_sql).to match(/"login" DESC/)
       expect(sorted_collection.to_sql).to match(/"id" ASC/)

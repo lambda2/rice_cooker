@@ -55,7 +55,6 @@ class UsersController < ActionController::Base
 
   def index
     @users = apply_scopes(User).all
-    p @users.to_sql
     render json: @users
   end
 end
