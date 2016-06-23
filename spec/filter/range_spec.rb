@@ -92,7 +92,7 @@ RSpec.describe RiceCooker::Range do
     it 'Invalid ranged' do
       # Desc ranged
       expect do
-        ranged_collection = apply_range_to_collection(@collection, login: %w(aaubin qbollach andre),
+        apply_range_to_collection(@collection, login: %w(aaubin qbollach andre),
                                                                    id: ['74'])
       end.to raise_error(RiceCooker::InvalidRangeValueException)
     end
@@ -115,7 +115,10 @@ RSpec.describe RiceCooker::Range do
 
   #   it 'Double ranged' do
   #     # Desc ranged
-  #     filtered_collection = apply_filter_to_collection(@collection, {with_the_letter: ['a'], without_the_letter: ['l']}, @test_filter)
+  #     filtered_collection = apply_filter_to_collection(@collection, {
+  #       with_the_letter: ['a'],
+  #       without_the_letter: ['l']
+  #     }, @test_filter)
   #     # puts filtered_collection.to_sql
   #     expect(filtered_collection.to_sql).to match(/WHERE/)
   #     expect(filtered_collection.to_sql).to match(/first_name ILIKE '%a%'/)

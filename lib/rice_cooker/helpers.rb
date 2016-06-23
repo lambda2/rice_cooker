@@ -99,15 +99,12 @@ module RiceCooker
 
       sorting_params = CSV.parse_line(URI.unescape(sorting_param)).collect do |sort|
         if sort.start_with?('-')
-          sorting_param = { field: sort[1..-1].to_s.to_sym }
-          sorting_param[:direction] = :desc
+          sorting_param = { field: sort[1..-1].to_s.to_sym, direction: :desc}
         else
-          sorting_param = { field: sort.to_s.to_sym }
-          sorting_param[:direction] = :asc
+          sorting_param = { field: sort.to_s.to_sym, direction: :asc}
         end
 
         check_sorting_param(model, sorting_param)
-        # p "Sort params accepted: #{sorting_param.inspect}"
         sorting_param
       end
       sorting_params.map { |par| [par[:field], par[:direction]] }.to_h
@@ -303,16 +300,20 @@ module RiceCooker
           # Si on a fourni des valeurs, on verifie qu'elle matchent
           if additional[field].key?(:all) && additional[field][:all].try(:any?)
             allowed = additional[field][:all].map(&:to_s)
-            raise InvalidRangeValueException, "Value #{(value - allowed).to_sentence} is not allowed for range #{field}, can be #{allowed.to_sentence}" if (value - allowed).any?
+            raise InvalidRangeValueException, "
+              Value #{(value - allowed).to_sentence} is not allowed for range #{field}, can be #{allowed.to_sentence}
+            " if (value - allowed).any?
           end
 
           collection = collection.instance_exec(value, &(additional[field][:proc]))
         elsif value.is_a? Array
-          _from, _to = value.slice(0, 2)
+          from, to = value.slice(0, 2)
           begin
-            collection = collection.where(field => _from.._to)
-          rescue ArgumentError => e
-            raise InvalidRangeValueException, "Unable to create a range between values '#{_from}' and '#{_to}'"
+            collection = collection.where(field => from..to)
+          rescue ArgumentError
+            raise InvalidRangeValueException, "
+              Unable to create a range between values '#{from}' and '#{to}'
+            "
           end
         elsif value.is_a?(Hash) && value.key?(:proc)
           collection

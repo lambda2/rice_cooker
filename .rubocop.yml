@@ -1,0 +1,22 @@
+Documentation:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 120
+
+
+Metrics/ClassLength:
+  CountComments: false  # count full line comments?
+  Max: 300
+
+Metrics/ModuleLength:
+  CountComments: false  # count full line comments?
+  Max: 300
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+
+Metrics/MethodLength:
+  CountComments: false  # count full line comments?
+  Max: 20
