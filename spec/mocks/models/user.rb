@@ -22,4 +22,11 @@ end
 ActiveRecord::Migration.verbose = false
 CreateAllTables.up
 
-[{login: "andre", email: "tata"}].each{|u| User.create!(u)}
+[
+  {login: "andre", email: "tata"},
+  {login: "mathieu", email: "toto"},
+  {login: "bobol", email: "titi"},
+  {login: "fred", email: "gratti"},
+  {login: "jeanne", email: "zapata"},
+  {login: "angie", email: "tutu"}
+].each{|u| User.create!(u)}
