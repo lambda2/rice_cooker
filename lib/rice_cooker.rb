@@ -11,5 +11,5 @@ end
 class ActionController::Base
   include RiceCooker::Sort
   include RiceCooker::Filter
-  include RiceCooker::Range
+  # include RiceCooker::Range
 end
