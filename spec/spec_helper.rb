@@ -2,8 +2,9 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 begin
-  require 'rails'
+  require 'rails/engine'
 rescue LoadError
+  p 'Unable to load rails/engine !'
 end
 
 require 'bundler/setup'
