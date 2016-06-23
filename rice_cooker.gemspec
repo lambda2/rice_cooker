@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email         = ['andre.aubin@lambdaweb.fr']
   s.homepage      = 'https://github.com/lambda2/rice_cooker'
   s.summary       = "A collection manager for Rails API's"
-  s.description   = 'Handle pagination, sorting, filtering, searching, and ranging on Rails collections.'
+  s.description   = 'Handle sort, filters, searches, and ranges on Rails collections.'
   s.license       = 'MIT'
 
   s.files         = `git ls-files`.split("\n")
@@ -19,9 +19,10 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency 'rails', '~> 4.2.6'
-  s.add_dependency 'kaminari', '~> 0.17.0'
-  s.add_dependency 'api-pagination', '~> 4.3.0'
-  s.add_dependency 'has_scope', '~> 0.6'
+  # s.add_dependency 'kaminari', '~> 0.17.0'
+  # s.add_dependency 'api-pagination', '~> 4.3.0'
+  s.add_dependency('actionpack', '>= 3.2', '< 5')
+  s.add_dependency 'has_scope', '>= 0.6.0'
 
   s.add_development_dependency 'sqlite3'
   s.add_development_dependency 'rspec'
