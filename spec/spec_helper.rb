@@ -20,8 +20,7 @@ require 'mocks/mocks'
 # Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
-  # config.mock_with :rr
-  # config.filter_run_excluding :generator_spec => true if !ENV['GENERATOR_SPEC']
+
   config.color = true
 
   # Use color not only in STDOUT but also in pagers and files
