@@ -68,8 +68,10 @@ module RiceCooker
     def sortable_fields_for(model)
       if model.respond_to?(:sortable_fields)
         model.sortable_fields.map(&:to_sym)
-      else
+      elsif model.respond_to?(:column_names)
         model.column_names.map(&:to_sym)
+      else
+        []
       end
     end
 
@@ -77,8 +79,10 @@ module RiceCooker
     def filterable_fields_for(model)
       if model.respond_to?(:filterable_fields)
         model.filterable_fields.map(&:to_sym)
-      else
+      elsif model.respond_to?(:column_names)
         model.column_names.map(&:to_sym)
+      else
+        []
       end
     end
 

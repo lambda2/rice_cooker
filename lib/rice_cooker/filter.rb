@@ -13,7 +13,8 @@ module RiceCooker
         cattr_accessor :filtering_keys
         cattr_accessor :custom_filters
 
-        resource_class ||= controller_resource_class(self) unless respond_to?(:resource_class)
+        resource_class ||= controller_resource_class(self)# unless respond_to?(:resource_class)
+        p "Resource class for #{self.to_s} (-> #{controller_resource_class(self)}): #{resource_class}"
 
         # On normalize tout ca
         additional_filtering_params = format_addtional_filtering_param(additional_filtering_params)
