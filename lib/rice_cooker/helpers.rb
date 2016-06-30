@@ -203,7 +203,7 @@ module RiceCooker
     end
 
     def apply_filter_to_collection(collection, filtering_params, additional = {})
-      return collection if collection.blank?
+      return collection if collection.nil?
 
       filtering_params.each do |field, value|
         if additional.key?(field) && additional[field].key?(:proc)
@@ -296,7 +296,7 @@ module RiceCooker
     end
 
     def apply_range_to_collection(collection, ranged_params, additional = {})
-      return collection if collection.blank?
+      return collection if collection.nil?
 
       ranged_params.each do |field, value|
         if additional.key?(field) && additional[field].key?(:proc)
