@@ -16,7 +16,7 @@ module RiceCooker
         resource_class ||= controller_resource_class(self) unless respond_to?(:resource_class)
 
         # On normalize tout ca
-        additional_ranged_params = format_addtional_ranged_param(additional_ranged_params)
+        additional_ranged_params = format_addtional_param(additional_ranged_params, 'ranged')
 
         # On recupere tous les filtres autorisés
         allowed_keys = (rangeable_fields_for(resource_class) + additional_ranged_params.keys)

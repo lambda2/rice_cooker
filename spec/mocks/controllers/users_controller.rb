@@ -48,7 +48,7 @@ class UsersController < ActionController::Base
 
   sorted
   filtered
-  # ranged
+  ranged
 
   def index
     @users = apply_scopes(User).all

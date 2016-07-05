@@ -172,7 +172,7 @@ module RiceCooker
     #
     # On va donc transformer `additional` dans le format ci-dessus
     #
-    def format_addtional_filtering_param(additional)
+    def format_addtional_param(additional, context_format = 'filtering')
       if additional.is_a? Hash
         additional = additional.map do |field, value|
           if value.is_a?(Hash)
@@ -194,7 +194,7 @@ module RiceCooker
               description: ''
             }
           else
-            raise "Unable to format addional filtering params (got #{additional})"
+            raise "Unable to format addional #{context_format} params (got #{additional})"
           end
           [field, value]
         end.to_h
@@ -253,47 +253,6 @@ module RiceCooker
       raise InvalidRangeException, "Attributes #{🔞.map(&:to_s).to_sentence} doesn't exists or aren't rangeables. Available ranges are: #{allowed.to_sentence}" if 🔞.any?
     end
 
-    # On va essayer de garder un format commun, qui est:
-    #
-    # ```
-    # range: {
-    #   proc: -> (values) { * je fais des trucs avec les values * },
-    #   all: ['les', 'valeurs', 'aceptées'],
-    #   description: "La description dans la doc"
-    # }
-    # ```
-    #
-    # On va donc transformer `additional` dans le format ci-dessus
-    #
-    def format_addtional_ranged_param(additional)
-      if additional.is_a? Hash
-        additional = additional.map do |field, value|
-          if value.is_a?(Hash)
-            value = {
-              proc: nil,
-              all: [],
-              description: ''
-            }.merge(value)
-          elsif value.is_a? Array
-            value = {
-              proc: value.try(:at, 0),
-              all: value.try(:at, 1) || [],
-              description: value.try(:at, 2) || ''
-            }
-          elsif value.is_a? Proc
-            value = {
-              proc: value,
-              all: [],
-              description: ''
-            }
-          else
-            raise "Unable to format addional ranged params (got #{additional})"
-          end
-          [field, value]
-        end.to_h
-      end
-      additional
-    end
 
     def apply_range_to_collection(collection, ranged_params, additional = {})
       return collection if collection.nil?
