@@ -18,9 +18,9 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- spec/*`.split(/\n/)
   s.require_paths = ['lib']
 
-  s.add_dependency 'rails', '~> 5.0.0', '< 5.1'
-  s.add_dependency 'actionpack', '~> 5.0.0', '< 5.1'
-  s.add_dependency 'railties', '~> 5.0.0', '< 5.1'
+  s.add_dependency 'rails', '>= 4.2.0', '< 5.1'
+  s.add_dependency 'actionpack', '>= 4.2.0', '< 5.1'
+  s.add_dependency 'railties', '>= 4.2.0', '< 5.1'
   s.add_dependency 'has_scope', '~> 0.7.0', '>= 0.6.0'
 
   s.add_development_dependency 'sqlite3'
