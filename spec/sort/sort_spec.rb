@@ -95,22 +95,22 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'GET #index' do
     it 'without sort parameter' do
-      get :index, sort: '', format: :json
+      process :index, method: :get, params: { sort: '', format: :json }
       expect(response.body).to eq(User.all.to_json)
     end
 
     it 'with simple sort parameter' do
-      get :index, sort: 'login', format: :json
+      process :index, method: :get, params: { sort: 'login', format: :json }
       expect(response.body).to eq(User.all.order(:login).to_json)
     end
 
     it 'with double sort parameter' do
-      get :index, sort: 'login,id', format: :json
+      process :index, method: :get, params: { sort: 'login,id', format: :json }
       expect(response.body).to eq(User.all.order(:login, :id).to_json)
     end
 
     it 'with double and reverse sort parameter' do
-      get :index, sort: 'login,-id', format: :json
+      process :index, method: :get, params: { sort: 'login,-id', format: :json }
       expect(response.body).to eq(User.all.order(:login, id: :desc).to_json)
     end
   end

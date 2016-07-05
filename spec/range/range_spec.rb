@@ -242,23 +242,23 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'GET #index' do
     it 'without range parameter' do
-      get :index, range: '', format: :json
+      process :index, method: :get, params: { range: '', format: :json }
       expect(response.body).to eq(User.all.order(id: :desc).to_json)
     end
 
     it 'with simple range parameter' do
-      get :index, range: { login: 'aaubin,qbollach' }, format: :json
+      process :index, method: :get, params: { range: { login: 'aaubin,qbollach' }, format: :json }
       expect(response.body).to eq(User.where(login: 'aaubin'..'qbollach').order(id: :desc).to_json)
     end
 
     it 'with multiple range parameter' do
-      get :index, range: { login: 'aaubin,qbollach', id: '1,5' }, format: :json
+      process :index, method: :get, params: { range: { login: 'aaubin,qbollach', id: '1,5' }, format: :json }
       expect(response.body).to eq(User.where(login: 'aaubin'..'qbollach', id: 1..5).order(id: :desc).to_json)
     end
 
     it 'with invalid range parameter' do
       expect do
-        get :index, range: { created_at: '2016-02-04,qbollach', login: '^,&' }, format: :json
+        process :index, method: :get, params: { range: { created_at: '2016-02-04,qbollach', login: '^,&' }, format: :json }
       end.to raise_error(RiceCooker::InvalidRangeException)
     end
   end

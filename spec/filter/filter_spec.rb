@@ -142,7 +142,7 @@ RSpec.describe RiceCooker::Filter do
         apply_filter_to_collection(
           @collection,
           { sorted: %w(true baguette) },
-          format_addtional_filtering_param(sorted: [-> (v) { v }, %w(true false maybe)])
+          format_additional_param(sorted: [-> (v) { v }, %w(true false maybe)])
         )
       end.to raise_error(RiceCooker::InvalidFilterValueException)
     end
@@ -150,7 +150,7 @@ RSpec.describe RiceCooker::Filter do
 
   describe 'Additional params must be correctly formated' do
     it 'No additional params' do
-      formated = format_addtional_filtering_param({})
+      formated = format_additional_param({})
       expect(formated).to be_eql({})
     end
 
@@ -160,7 +160,7 @@ RSpec.describe RiceCooker::Filter do
         all: [1, 2, 3],
         description: 'A good filter'
       } }
-      formated = format_addtional_filtering_param(p)
+      formated = format_additional_param(p)
       expect(formated).to be_eql(p)
     end
 
@@ -174,7 +174,7 @@ RSpec.describe RiceCooker::Filter do
         all: [1, 2, 3],
         description: ''
       } }
-      formated = format_addtional_filtering_param(p)
+      formated = format_additional_param(p)
       expect(formated).to be_eql(expected)
     end
 
@@ -185,7 +185,7 @@ RSpec.describe RiceCooker::Filter do
         all: [],
         description: ''
       } }
-      formated = format_addtional_filtering_param(p)
+      formated = format_additional_param(p)
       expect(formated).to be_eql(expected)
     end
 
@@ -196,7 +196,7 @@ RSpec.describe RiceCooker::Filter do
         all: @all,
         description: ''
       } }
-      formated = format_addtional_filtering_param(p)
+      formated = format_additional_param(p)
       expect(formated).to be_eql(expected)
     end
 
@@ -229,7 +229,7 @@ RSpec.describe RiceCooker::Filter do
           description: 'Buuuuh'
         }
       }
-      formated = format_addtional_filtering_param(p)
+      formated = format_additional_param(p)
       expect(formated).to be_eql(expected)
     end
   end
@@ -242,22 +242,22 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'GET #index' do
     it 'without filter parameter' do
-      get :index, filter: '', format: :json
+      process :index, method: :get, params: { filter: '', format: :json }
       expect(response.body).to eq(User.all.order(id: :desc).to_json)
     end
 
     it 'with simple filter parameter' do
-      get :index, filter: { login: 'aaubin' }, format: :json
+      process :index, method: :get, params: { filter: { login: 'aaubin' }, format: :json }
       expect(response.body).to eq(User.where(login: 'aaubin').order(id: :desc).to_json)
     end
 
     it 'with double filter parameter' do
-      get :index, filter: { login: 'aaubin,qbollach' }, format: :json
+      process :index, method: :get, params: { filter: { login: 'aaubin,qbollach' }, format: :json }
       expect(response.body).to eq(User.where(login: %w(aaubin qbollach)).order(id: :desc).to_json)
     end
 
     it 'with double and multiple filter parameter' do
-      get :index, filter: { login: 'aaubin,qbollach', email: 'tata' }, format: :json
+      process :index, method: :get, params: { filter: { login: 'aaubin,qbollach', email: 'tata' }, format: :json }
       expect(response.body).to eq(User.where(login: %w(aaubin qbollach), email: 'tata').order(id: :desc).to_json)
     end
   end
