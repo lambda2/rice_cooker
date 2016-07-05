@@ -13,3 +13,26 @@ In your `Gemfile`:
 ```ruby
 gem 'rice_cooker'
 ```
+
+Then, in your controllers
+
+```ruby
+
+class UsersController < ActionController::Base
+
+  # Will handle sorting with the 'sort' parameter.
+  sorted
+
+  # Will handle filtering with the 'filter[]' parameter.
+  filtered
+
+  # Will handle range-ing with the 'range[]' parameter.
+  ranged
+
+  def index
+    @users = apply_scopes(User).all
+    render json: @users
+  end
+end
+
+```

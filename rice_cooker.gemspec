@@ -18,10 +18,10 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split('\n')
   s.require_paths = ['lib']
 
-  s.add_dependency 'rails', '~> 4.2.6'
+  s.add_dependency 'rails', '>= 3.2', '< 5.1'
   # s.add_dependency 'kaminari', '~> 0.17.0'
   # s.add_dependency 'api-pagination', '~> 4.3.0'
-  s.add_dependency 'actionpack', '>= 3.2', '< 5'
+  s.add_dependency 'actionpack', '>= 3.2', '< 5.1'
   s.add_dependency 'railties', '>= 4.2.0', '< 5.1'
   s.add_dependency 'has_scope', '>= 0.6.0'
 
