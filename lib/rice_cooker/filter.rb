@@ -16,7 +16,7 @@ module RiceCooker
         resource_class ||= controller_resource_class(self)# unless respond_to?(:resource_class)
 
         # On normalize tout ca
-        additional_filtering_params = format_addtional_param(additional_filtering_params, 'filtering')
+        additional_filtering_params = format_additional_param(additional_filtering_params, 'filtering')
 
         # On recupere tous les filtres autorisés
         allowed_keys = (filterable_fields_for(resource_class) + additional_filtering_params.keys)

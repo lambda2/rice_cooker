@@ -1,5 +1,9 @@
 class User < ActiveRecord::Base
   has_many :comments
+
+  def self.rangeable_fields
+    [:id, :login, :email]
+  end
 end
 
 class Comment < ActiveRecord::Base
@@ -9,12 +13,12 @@ end
 # migrations
 class CreateAllTables < ActiveRecord::Migration
   def self.up
-    create_table(:users) { |t| t.string :login; t.string :email }
-    create_table(:comments) { |t| t.integer :user_id; t.string :content }
+    create_table(:users) { |t| t.string :login; t.string :email; t.timestamps }
+    create_table(:comments) { |t| t.integer :user_id; t.string :content; t.timestamps }
   end
 end
 
-ActiveRecord::Migration.verbose = false
+ActiveRecord::Migration.verbose = true
 CreateAllTables.up
 
 [

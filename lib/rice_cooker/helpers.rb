@@ -172,7 +172,7 @@ module RiceCooker
     #
     # On va donc transformer `additional` dans le format ci-dessus
     #
-    def format_addtional_param(additional, context_format = 'filtering')
+    def format_additional_param(additional, context_format = 'filtering')
       if additional.is_a? Hash
         additional = additional.map do |field, value|
           if value.is_a?(Hash)
@@ -267,8 +267,7 @@ module RiceCooker
               Value #{(value - allowed).to_sentence} is not allowed for range #{field}, can be #{allowed.to_sentence}
             " if (value - allowed).any?
           end
-
-          collection = collection.instance_exec(value, &(additional[field][:proc]))
+          collection = collection.instance_exec(value.try(:first), value.try(:last), &(additional[field][:proc]))
         elsif value.is_a? Array
           from, to = value.slice(0, 2)
           begin
