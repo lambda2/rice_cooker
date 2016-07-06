@@ -13,16 +13,14 @@ module RiceCooker
         cattr_accessor :filtering_keys
         cattr_accessor :custom_filters
 
-        # self.resource_model ||= controller_resource_class(self)
-
         # On normalize tout ca
         additional_filtering_params = format_additional_param(additional_filtering_params, 'filtering')
 
         # On recupere tous les filtres autorisés
-        allowed_keys = (filterable_fields_for(self.resource_model) + additional_filtering_params.keys)
+        allowed_keys = (filterable_fields_for(resource_model) + additional_filtering_params.keys)
 
         # On fait une sorte de *register_bool_filter* sur tous les champs *_at
-        additional = (filterable_fields_for(self.resource_model) - [:created_at, :updated_at])
+        additional = (filterable_fields_for(resource_model) - [:created_at, :updated_at])
                      .select { |e| e =~ /_at$/ }
                      .select { |e| additional_filtering_params[e.to_s.gsub(/_at$/, '')].nil? }
 
@@ -30,18 +28,18 @@ module RiceCooker
           name = fi.to_s.gsub(/_at$/, '')
 
           if fi.to_sym == :begin_at
-            db_field = "#{self.resource_model.quoted_table_name}.\"#{fi}\""
+            db_field = "#{resource_model.quoted_table_name}.\"#{fi}\""
             additional_filtering_params[:future] = {
               proc: -> (value) { value.first == 'true' ? where("#{db_field} >= ?", Time.zone.now) : where("#{db_field} < ?", Time.zone.now) },
               all: %w(true false),
-              description: "Return only #{self.resource_model.to_s.underscore.humanize.downcase.pluralize} which begins in the future"
+              description: "Return only #{resource_model.to_s.underscore.humanize.downcase.pluralize} which begins in the future"
             }
             allowed_keys << :future
           else
             additional_filtering_params[name.to_sym] = {
               proc: -> (value) { value.first == 'true' ? where.not(fi => nil) : where(fi => nil) },
               all: %w(true false),
-              description: "Return only #{name} #{self.resource_model.to_s.underscore.humanize.downcase.pluralize}"
+              description: "Return only #{name} #{resource_model.to_s.underscore.humanize.downcase.pluralize}"
             }
             allowed_keys << name
           end
@@ -88,7 +86,7 @@ module RiceCooker
         custom_filters[name] = {
           proc: -> (value) { value.first == 'true' ? where.not(field => nil) : where(field => nil) },
           all: %w(true false),
-          description: description || "Return only #{self.resource_model.to_s.underscore.humanize.downcase.pluralize} with a #{field}"
+          description: description || "Return only #{resource_model.to_s.underscore.humanize.downcase.pluralize} with a #{field}"
         }
         filtering_keys << name
       end

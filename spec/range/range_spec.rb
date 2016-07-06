@@ -90,20 +90,19 @@ RSpec.describe RiceCooker::Range do
       # Desc ranged
       expect do
         apply_range_to_collection(@collection, login: %w(aaubin qbollach andre),
-                                                                   id: ['74'])
+                                               id: ['74'])
       end.to raise_error(RiceCooker::InvalidRangeValueException)
     end
   end
 
   describe 'Must apply custom ranges to given collection' do
-
     it 'Default null ranged' do
       ranged_collection = apply_range_to_collection(@collection, {}, @test_range)
       expect(ranged_collection.to_sql).to match(/^((?!WHERE).)*$/)
     end
 
     it 'Default ranged' do
-      ranged_collection = apply_range_to_collection(@collection, {between_the_letter: ['a', 'b']}, @test_range)
+      ranged_collection = apply_range_to_collection(@collection, { between_the_letter: %w(a b) }, @test_range)
       expect(ranged_collection.to_sql).to match(/WHERE/)
       expect(ranged_collection.to_sql).to match(/BETWEEN/)
     end
@@ -111,9 +110,9 @@ RSpec.describe RiceCooker::Range do
     it 'Double ranged' do
       # Desc ranged
       ranged_collection = apply_range_to_collection(@collection, {
-        between_the_letter: ['a', 'b'],
-        not_between_the_letter: ['x', 'z']
-      }, @test_range)
+                                                      between_the_letter: %w(a b),
+                                                      not_between_the_letter: %w(x z)
+                                                    }, @test_range)
       expect(ranged_collection.to_sql).to match(/WHERE/)
       expect(ranged_collection.to_sql).to match(/first_name BETWEEN 'a' AND 'b'/)
       expect(ranged_collection.to_sql).to match(/AND \(first_name NOT BETWEEN 'x' AND 'z'\)/)
@@ -121,10 +120,8 @@ RSpec.describe RiceCooker::Range do
 
     it 'Multiple ranged' do
       # Desc ranged
-      ranged_collection = apply_range_to_collection(@collection, {
-        login: ['aaubin', 'qbollach'],
-        id: ['74', '76']
-      })
+      ranged_collection = apply_range_to_collection(@collection, login: %w(aaubin qbollach),
+                                                                 id: %w(74 76))
       expect(ranged_collection.to_sql).to match(/WHERE/)
       expect(ranged_collection.to_sql).to match(/BETWEEN 'aaubin' AND 'qbollach'/)
       expect(ranged_collection.to_sql).to match(/\) AND \(/)
@@ -136,75 +133,71 @@ RSpec.describe RiceCooker::Range do
       expect do
         apply_range_to_collection(
           @collection,
-          {sorted: ['true', 'baguette']},
-          format_additional_param({sorted: [-> (v, w) { v }, ['true', 'false', 'maybe']]}, 'ranged')
+          { sorted: %w(true baguette) },
+          format_additional_param({ sorted: [-> (v, _w) { v }, %w(true false maybe)] }, 'ranged')
         )
       end.to raise_error(RiceCooker::InvalidRangeValueException)
     end
   end
 
   describe 'Additional params must be correctly formated' do
-
     it 'No additional params' do
       formated = format_additional_param({}, 'ranged')
       expect(formated).to be_eql({})
     end
 
     it 'Already correctly formatted additional params' do
-      p = {range: {
+      p = { range: {
         proc: @proc,
         all: [1, 2, 3],
         description: 'A good filter'
-      }}
+      } }
       formated = format_additional_param(p, 'ranged')
       expect(formated).to be_eql(p)
     end
 
     it 'Missing description additional params' do
-      p = {filter: {
+      p = { filter: {
         proc: @proc,
         all: [1, 2, 3]
-      }}
-      expected = {filter: {
+      } }
+      expected = { filter: {
         proc: @proc,
         all: [1, 2, 3],
         description: ''
-      }}
+      } }
       formated = format_additional_param(p, 'ranged')
       expect(formated).to be_eql(expected)
     end
 
     it 'Only proc additional params' do
-
-      p = {filter: @proc}
-      expected = {filter: {
+      p = { filter: @proc }
+      expected = { filter: {
         proc: @proc,
         all: [],
         description: ''
-      }}
+      } }
       formated = format_additional_param(p, 'ranged')
       expect(formated).to be_eql(expected)
     end
 
     it 'Array with proc and all additional params' do
-
-      p = {filter: [@proc, @all]}
-      expected = {filter: {
+      p = { filter: [@proc, @all] }
+      expected = { filter: {
         proc: @proc,
         all: @all,
         description: ''
-      }}
+      } }
       formated = format_additional_param(p, 'ranged')
       expect(formated).to be_eql(expected)
     end
 
     it 'Multiple, std + Array with proc and all additional params' do
-
       p = {
         tata: @proc,
-        toto: {proc: @proc, all: [1, 2]},
+        toto: { proc: @proc, all: [1, 2] },
         filter: [@proc, @all],
-        tutu: {proc: @proc, description: 'Buuuuh'}
+        tutu: { proc: @proc, description: 'Buuuuh' }
       }
       expected = {
         tata: {
@@ -231,7 +224,6 @@ RSpec.describe RiceCooker::Range do
       formated = format_additional_param(p, 'ranged')
       expect(formated).to be_eql(expected)
     end
-
   end
 end
 

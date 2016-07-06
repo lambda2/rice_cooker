@@ -58,11 +58,11 @@ module RiceCooker
       return {} unless sorting_param.present?
 
       sorting_params = CSV.parse_line(URI.unescape(sorting_param)).collect do |sort|
-        if sort.start_with?('-')
-          sorting_param = { field: sort[1..-1].to_s.to_sym, direction: :desc}
-        else
-          sorting_param = { field: sort.to_s.to_sym, direction: :asc}
-        end
+        sorting_param = if sort.start_with?('-')
+                          { field: sort[1..-1].to_s.to_sym, direction: :desc }
+                        else
+                          { field: sort.to_s.to_sym, direction: :asc }
+                        end
 
         check_sorting_param(model, sorting_param)
         sorting_param
@@ -208,7 +208,6 @@ module RiceCooker
       🔞 = ranged_param.keys.map(&:to_sym) - allowed.map(&:to_sym)
       raise InvalidRangeException, "Attributes #{🔞.map(&:to_s).to_sentence} doesn't exists or aren't rangeables. Available ranges are: #{allowed.to_sentence}" if 🔞.any?
     end
-
 
     def apply_range_to_collection(collection, ranged_params, additional = {})
       return collection if collection.nil?

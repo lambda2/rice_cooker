@@ -11,7 +11,6 @@ end
 
 module ActionController
   class Base
-
     def self.rice_cooked(base)
       base.class_eval do
         include RiceCooker::Sort
@@ -19,13 +18,12 @@ module ActionController
         include RiceCooker::Range
         extend  RiceCooker::ClassMethods
 
-        self.class_attribute :resource_model, :instance_writer => false
+        class_attribute :resource_model, instance_writer: false
 
         protected :resource_model
       end
     end
 
     rice_cooked(self)
-
   end
 end
