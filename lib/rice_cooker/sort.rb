@@ -1,5 +1,6 @@
 require 'csv'
 require 'active_support'
+require 'pry'
 
 module RiceCooker
   module Sort
@@ -21,20 +22,21 @@ module RiceCooker
         cattr_accessor :default_order
         cattr_accessor :sorted_keys
 
-        resource_class ||= controller_resource_class(self) unless respond_to?(:resource_class)
+        # self.resource_model ||= controller_resource_class(self)
 
-        return unless sorted_keys.nil? || resource_class.nil?
+        return unless sorted_keys.nil? || self.resource_model.nil?
 
         default_sorting_params = { default_sorting_params => :asc } if default_sorting_params.is_a? Symbol
 
+        # binding.pry
         # On recupere le default
         self.default_order = default_sorting_params
-        self.sorted_keys = (resource_class.respond_to?(:sortable_fields) ? resource_class.sortable_fields : [])
+        self.sorted_keys = (self.resource_model.respond_to?(:sortable_fields) ? self.resource_model.sortable_fields : [])
         default_sort = param_from_defaults(default_sorting_params)
 
         has_scope :sort, default: default_sort, only: [:index] do |controller, scope, value|
           if controller.params[SORT_PARAM].present?
-            scope = apply_sort_to_collection(scope, parse_sorting_param(value, resource_class))
+            scope = apply_sort_to_collection(scope, parse_sorting_param(value, self.resource_model))
           else
             scope = apply_sort_to_collection(scope, default_sorting_params)
           end
@@ -43,6 +45,7 @@ module RiceCooker
 
       rescue NoMethodError => e
         "Just wanna die ⚓️ #{e}"
+        super
       end
     end
   end

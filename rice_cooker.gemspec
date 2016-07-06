@@ -30,13 +30,10 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'mocha', '1.1.0'
   s.add_development_dependency 'ruby-prof', '0.15.8'
   s.add_development_dependency 'test-unit', '3.1.3'
-  s.add_development_dependency 'rails-perftest', '0.0.6'
   s.add_development_dependency 'simplecov', '0.11.1'
   s.add_development_dependency 'factory_girl_rails', '~> 4.0'
   s.add_development_dependency 'database_cleaner'
   s.add_development_dependency 'faker', '1.6.1'
   s.add_development_dependency 'pry'
-  s.add_development_dependency 'derailed'
-  s.add_development_dependency 'stackprof'
   s.add_development_dependency 'rubocop', '~> 0.40.0'
 end
