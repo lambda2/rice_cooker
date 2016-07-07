@@ -11,6 +11,7 @@ Handle sort, filters, searches, and ranges on Rails collections.
 In your `Gemfile`:
 
 ```ruby
+gem 'has_scope'
 gem 'rice_cooker'
 ```
 
