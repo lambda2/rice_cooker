@@ -37,3 +37,5 @@ class UsersController < ActionController::Base
 end
 
 ```
+
+### Sorting
