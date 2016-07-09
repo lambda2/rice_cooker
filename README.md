@@ -39,3 +39,13 @@ end
 ```
 
 ### Sorting
+
+Todo
+
+### Filtering
+
+Todo
+
+### Ranging
+
+Todo
