@@ -7,23 +7,23 @@ module RiceCooker
   autoload :Sort,         'rice_cooker/sort'
   autoload :Range,        'rice_cooker/range'
   autoload :VERSION,      'rice_cooker/version'
+
+  def self.rice_cooked(base)
+    base.class_eval do
+      include RiceCooker::Sort
+      include RiceCooker::Filter
+      include RiceCooker::Range
+      extend  RiceCooker::ClassMethods
+
+      class_attribute :resource_model, instance_writer: false
+
+      protected :resource_model
+    end
+  end
 end
 
 module ActionController
   class Base
-    def self.rice_cooked(base)
-      base.class_eval do
-        include RiceCooker::Sort
-        include RiceCooker::Filter
-        include RiceCooker::Range
-        extend  RiceCooker::ClassMethods
-
-        class_attribute :resource_model, instance_writer: false
-
-        protected :resource_model
-      end
-    end
-
-    rice_cooked(self)
+    RiceCooker.rice_cooked(self)
   end
 end
