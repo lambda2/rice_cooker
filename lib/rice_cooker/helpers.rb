@@ -11,6 +11,12 @@ module RiceCooker
   class InvalidFilterValueException < Exception
   end
 
+  class InvalidSearchException < Exception
+  end
+
+  class InvalidSearchValueException < Exception
+  end
+
   class InvalidRangeException < Exception
   end
 
@@ -39,6 +45,15 @@ module RiceCooker
         model.column_names.map(&:to_sym)
       else
         []
+      end
+    end
+
+    # Overridable method for available rangeable fields
+    def searchable_fields_for(model)
+      if model.respond_to?(:searchable_fields)
+        model.rangeable_fields.map(&:to_sym)
+      else
+        filterable_fields_for(model)
       end
     end
 
@@ -173,6 +188,91 @@ module RiceCooker
           collection = collection.instance_exec(value, &(additional[field][:proc]))
         elsif value.is_a?(String) || value.is_a?(Array)
           collection = collection.where(field => value)
+        elsif value.is_a?(Hash) && value.key?(:proc)
+          collection
+        end
+      end
+      collection
+    end
+
+
+    # ------------------------ Search helpers --------------------
+
+    # Va transformer le param url en hash exploitable
+    def parse_searching_param(searching_param, allowed_params)
+      return {} unless searching_param.present?
+
+      fields = {}
+
+      # Extract the fields for each type from the fields parameters
+      if searching_param.is_a?(Hash)
+        searching_param.each do |field, value|
+          resource_fields = value.split(',') unless value.nil? || value.empty?
+          fields[field.to_sym] = resource_fields
+        end
+      else
+        raise InvalidSearchException, "Invalid search format for #{searching_param}"
+      end
+      check_searching_param(fields, allowed_params)
+      fields
+    end
+
+    # Our little barrier <3
+    def check_searching_param(searching_param, allowed)
+      🔞 = searching_param.keys.map(&:to_sym) - allowed.map(&:to_sym)
+      raise InvalidSearchException, "Attributes #{🔞.map(&:to_s).to_sentence} doesn't exists or aren't searchables. Available searchs are: #{allowed.to_sentence}" if 🔞.any?
+    end
+
+    # On va essayer de garder un format commun, qui est:
+    #
+    # ```
+    # search: {
+    #   proc: -> (values) { * je fais des trucs avec les values * },
+    #   all: ['les', 'valeurs', 'aceptées'],
+    #   description: "La description dans la doc"
+    # }
+    # ```
+    #
+    # On va donc transformer `additional` dans le format ci-dessus
+    #
+    def format_additional_param(additional, context_format = 'searching')
+      if additional.is_a? Hash
+        additional = additional.map do |field, value|
+          if value.is_a?(Hash)
+            value = {
+              proc: nil,
+              all: [],
+              description: ''
+            }.merge(value)
+          elsif value.is_a? Array
+            value = {
+              proc: value.try(:at, 0),
+              all: value.try(:at, 1) || [],
+              description: value.try(:at, 2) || ''
+            }
+          elsif value.is_a? Proc
+            value = {
+              proc: value,
+              all: [],
+              description: ''
+            }
+          else
+            raise "Unable to format addional #{context_format} params (got #{additional})"
+          end
+          [field, value]
+        end.to_h
+      end
+      additional
+    end
+
+    def apply_search_to_collection(collection, searching_params, additional = {})
+      return collection if collection.nil?
+
+      searching_params.each do |field, value|
+        if additional.key?(field) && additional[field].key?(:proc)
+          collection = collection.instance_exec(value, &(additional[field][:proc]))
+        elsif value.is_a?(String) || value.is_a?(Array)
+          collection = collection.where("#{collection.model.quoted_table_name}.\"#{field}\" ILIKE ?", "%#{value.join(' ')}%")
         elsif value.is_a?(Hash) && value.key?(:proc)
           collection
         end
