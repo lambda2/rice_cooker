@@ -6,52 +6,85 @@ module RiceCooker
 
     FILTER_PARAM = :filter
 
-    module ClassMethods
+    class Filter
       include Helpers
+      attr_accessor :params
+      attr_accessor :model
+      attr_accessor :allowed_keys
 
+      def initialize(unformated_params, model)
+        @params = format_additional_param((unformated_params || {}), 'filtering')
+        @model = model
+        @allowed_keys = (filterable_fields_for(@model) + @params.keys)
+      end
+
+      def register_bools
+        additional = (filterable_fields_for(@model) - [:created_at, :updated_at])
+                     .select { |e| e =~ /_at$/ }
+                     .select { |e| @params[e.to_s.gsub(/_at$/, '')].nil? }
+        additional.each { |fi| parse_bool(fi) }
+      end
+
+      def parse_bool(fi)
+        if fi.to_sym == :begin_at
+          parse_future_bool fi
+        else
+          parse_named_bool fi
+        end
+      end
+
+      def parse_future_bool(fi)
+        @params[:future] = {
+          proc: Filer.get_future_lambda("#{@model.quoted_table_name}.\"#{fi}\""),
+          all: %w(true false),
+          description: "Return only #{@model.to_s.underscore.humanize.downcase.pluralize} which begins in the future"
+        }
+        @allowed_keys << :future
+      end
+
+      def parse_named_bool(fi)
+        name = fi.to_s.gsub(/_at$/, '')
+        @params[name.to_sym] = {
+          proc: Filer.get_named_lambda(fi),
+          all: %w(true false),
+          description: "Return only #{name} #{@model.to_s.underscore.humanize.downcase.pluralize}"
+        }
+        @allowed_keys << name
+      end
+
+      def self.get_future_lambda(db_field)
+        lambda do |value|
+          value.first == 'true' ? where("#{db_field} >= ?", Time.zone.now) : where("#{db_field} < ?", Time.zone.now)
+        end
+      end
+
+      def self.get_named_lambda(fi)
+        lambda do |value|
+          value.first == 'true' ? where.not(fi => nil) : where(fi => nil)
+        end
+      end
+
+      def process(value, scope, custom, filter)
+        params = parse_filtering_param(value, filter)
+        apply_filter_to_collection(scope, params, custom)
+      end
+    end
+
+    module ClassMethods
       def filtered(additional_filtering_params = {})
         cattr_accessor :filtering_keys
         cattr_accessor :custom_filters
 
-        # On normalize tout ca
-        additional_filtering_params = format_additional_param(additional_filtering_params, 'filtering')
+        filter = Filter.new(additional_filtering_params, resource_model)
 
-        # On recupere tous les filtres autorisés
-        allowed_keys = (filterable_fields_for(resource_model) + additional_filtering_params.keys)
-
-        # On fait une sorte de *register_bool_filter* sur tous les champs *_at
-        additional = (filterable_fields_for(resource_model) - [:created_at, :updated_at])
-                     .select { |e| e =~ /_at$/ }
-                     .select { |e| additional_filtering_params[e.to_s.gsub(/_at$/, '')].nil? }
-
-        additional.each do |fi|
-          name = fi.to_s.gsub(/_at$/, '')
-
-          if fi.to_sym == :begin_at
-            db_field = "#{resource_model.quoted_table_name}.\"#{fi}\""
-            additional_filtering_params[:future] = {
-              proc: -> (value) { value.first == 'true' ? where("#{db_field} >= ?", Time.zone.now) : where("#{db_field} < ?", Time.zone.now) },
-              all: %w(true false),
-              description: "Return only #{resource_model.to_s.underscore.humanize.downcase.pluralize} which begins in the future"
-            }
-            allowed_keys << :future
-          else
-            additional_filtering_params[name.to_sym] = {
-              proc: -> (value) { value.first == 'true' ? where.not(fi => nil) : where(fi => nil) },
-              all: %w(true false),
-              description: "Return only #{name} #{resource_model.to_s.underscore.humanize.downcase.pluralize}"
-            }
-            allowed_keys << name
-          end
-        end
+        filter.register_bools
 
         # On recupere le default
-        self.filtering_keys = allowed_keys
-        self.custom_filters = additional_filtering_params
+        self.filtering_keys = filter.allowed_keys
+        self.custom_filters = filter.params
 
         has_scope :filter, type: :hash, only: [:index] do |_controller, scope, value|
-          params = parse_filtering_param(value, filtering_keys)
-          scope = apply_filter_to_collection(scope, params, custom_filters)
+          scope = filter.process(value, scope, custom_filters, filtering_keys)
           scope
         end
       end
@@ -61,11 +94,11 @@ module RiceCooker
       #
       # name: le nom du filtre custom (ex: with_mark)
       # proc: le filtre, prend un arg `val` qui est un tableau des args du filtre
-      # all: l'ensemble des valeurs acceptées pour le filtre. Laisser nil ou [] pour tout accepter
+      # all: l'ensemble des valeurs acceptées pour le filtre. Laisser nil ou pour tout accepter
       # description: La description dans la doc
       #
       def register_filter(name, proc, all = nil, description = nil)
-        raise "A '#{name}' filter already exists for class #{self.class}" unless custom_filters[name].nil?
+        raise "A '#{name}' filter already exists for class #{self.class}" unless filter_exists?(name)
         custom_filters[name] = {
           proc: proc,
           all: all || [],
@@ -82,13 +115,18 @@ module RiceCooker
       # description: La description dans la doc
       #
       def register_bool_filter(name, field, description = nil)
-        raise "A '#{name}' filter already exists for class #{self.class}" unless custom_filters[name].nil?
+        raise "A '#{name}' filter already exists for class #{self.class}" unless filter_exists?(name)
         custom_filters[name] = {
-          proc: -> (value) { value.first == 'true' ? where.not(field => nil) : where(field => nil) },
+          proc: Filter.get_named_lambda(field),
           all: %w(true false),
           description: description || "Return only #{resource_model.to_s.underscore.humanize.downcase.pluralize} with a #{field}"
         }
         filtering_keys << name
+      end
+
+      # Check if the given custom filter name already exists
+      def filter_exists?(name)
+        !custom_filters[name].nil?
       end
     end
   end

@@ -1,13 +1,13 @@
 require 'action_controller'
 
 module RiceCooker
-  autoload :Helpers,      'rice_cooker/helpers'
+  autoload :Helpers, 'rice_cooker/helpers'
   autoload :ClassMethods, 'rice_cooker/class_methods'
-  autoload :Filter,       'rice_cooker/filter'
-  autoload :Sort,         'rice_cooker/sort'
-  autoload :Range,        'rice_cooker/range'
-  autoload :Search,        'rice_cooker/search'
-  autoload :VERSION,      'rice_cooker/version'
+  autoload :Filter, 'rice_cooker/filter'
+  autoload :Sort, 'rice_cooker/sort'
+  autoload :Range, 'rice_cooker/range'
+  autoload :Search, 'rice_cooker/search'
+  autoload :VERSION, 'rice_cooker/version'
 
   def self.rice_cooked(base)
     base.class_eval do
