@@ -1,7 +1,8 @@
 require 'action_controller'
 
 module RiceCooker
-  autoload :Helpers, 'rice_cooker/helpers'
+  autoload :Helpers, 'rice_cooker/base/helpers'
+  autoload :Base, 'rice_cooker/base/base'
   autoload :ClassMethods, 'rice_cooker/class_methods'
   autoload :Filter, 'rice_cooker/filter'
   autoload :Sort, 'rice_cooker/sort'

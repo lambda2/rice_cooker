@@ -265,19 +265,30 @@ module RiceCooker
       additional
     end
 
-    def apply_search_to_collection(collection, searching_params, additional = {})
-      return collection if collection.nil?
+    def reduce_where(col, field, value)
+      reducer = nil
+      value.each do |v|
+        query = col.model.arel_table[field.to_sym].matches("%#{v.to_s}%")
+        reducer = (reducer ? reducer.or(query) : query)
+      end
+      col.where(reducer)
+    end
+
+    def apply_search_to_collection(col, searching_params, additional = {})
+      return col if col.nil?
 
       searching_params.each do |field, value|
         if additional.key?(field) && additional[field].key?(:proc)
-          collection = collection.instance_exec(value, &(additional[field][:proc]))
-        elsif value.is_a?(String) || value.is_a?(Array)
-          collection = collection.where("#{collection.model.quoted_table_name}.\"#{field}\" ILIKE ?", "%#{value.join(' ')}%")
+          col = col.instance_exec(value, &(additional[field][:proc]))
+        elsif value.is_a?(String)
+          col = col.where(col.model.arel_table[field.to_sym].matches("%#{value.join(' ')}%"))
+        elsif value.is_a?(Array)
+          col = reduce_where(col, field, value)
         elsif value.is_a?(Hash) && value.key?(:proc)
-          collection
+          col
         end
       end
-      collection
+      col
     end
 
     # ------------------------ Range helpers --------------------

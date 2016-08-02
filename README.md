@@ -40,20 +40,20 @@ end
 
 ### Sorting
 
-The `sort` parameter allow sorting on one or several, comma-sparated, fields. The sort is applied in the order specified.
+The `sort` parameter allow sorting on one or several, comma-separated, fields. The sort is applied in the order specified.
 The sort order for each sort field is ascending unless it is prefixed with a minus (-), in which case it is descending.
 
 For example, the `api.example.org/unicorns?sort=color,-name` url will return all the unicorns order by **color** in the ascending order, and if they have the same color, by **name**, on the descending order.
 
 ### Filtering
 
-The `filter` parameter is a hash allowing filtering for a field, as a key, on one or several, comma-sparated, values. Only the fields matching the given filter(s) will be returned.
+The `filter` parameter is a hash allowing filtering for a field, as a key, on one or several, comma-separated, values. Only the fields matching the given filter(s) will be returned.
 
 For example, the `api.example.org/unicorns?filter[color]=yellow&filter[age]=21,22` url will return all the **yellow** unicorns which are **21** OR **22** years old.
 
 ### Ranging
 
-The `range` parameter is a hash allowing filtering for a field, as a key, on two comma-sparated bounds. Only the fields between the given bounds will be returned. The bounds are inclusives.
+The `range` parameter is a hash allowing filtering for a field, as a key, on two comma-separated bounds. Only the fields between the given bounds will be returned. The bounds are inclusives.
 
 For example, the `api.example.org/unicorns?range[age]=21,42` url will return all the unicorns which are between **21** and **42** years old.
 

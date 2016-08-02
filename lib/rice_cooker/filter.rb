@@ -6,15 +6,14 @@ module RiceCooker
 
     FILTER_PARAM = :filter
 
-    class Filter
-      include Helpers
-      attr_accessor :params
-      attr_accessor :model
-      attr_accessor :allowed_keys
+    class Filter < RiceCooker::Base
+
+      def self.action
+        :filtering
+      end
 
       def initialize(unformated_params, model)
-        @params = format_additional_param((unformated_params || {}), 'filtering')
-        @model = model
+        super
         @allowed_keys = (filterable_fields_for(@model) + @params.keys)
       end
 
@@ -83,7 +82,7 @@ module RiceCooker
         self.filtering_keys = filter.allowed_keys
         self.custom_filters = filter.params
 
-        has_scope :filter, type: :hash, only: [:index] do |_controller, scope, value|
+        has_scope FILTER_PARAM, type: :hash, only: [:index] do |_controller, scope, value|
           scope = filter.process(value, scope, custom_filters, filtering_keys)
           scope
         end
