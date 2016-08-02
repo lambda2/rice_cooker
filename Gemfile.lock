@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rice_cooker (0.1.5)
+    rice_cooker (0.1.6)
       actionpack (>= 4.2.0, < 5.1)
       has_scope (~> 0.7.0, >= 0.6.0)
       rails (>= 4.2.0, < 5.1)
