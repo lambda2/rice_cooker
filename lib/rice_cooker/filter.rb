@@ -97,7 +97,7 @@ module RiceCooker
       # description: La description dans la doc
       #
       def register_filter(name, proc, all = nil, description = nil)
-        raise "A '#{name}' filter already exists for class #{self.class}" unless filter_exists?(name)
+        # raise "A '#{name}' filter already exists for class #{self.class}" unless filter_exists?(name)
         custom_filters[name] = {
           proc: proc,
           all: all || [],
@@ -114,7 +114,7 @@ module RiceCooker
       # description: La description dans la doc
       #
       def register_bool_filter(name, field, description = nil)
-        raise "A '#{name}' filter already exists for class #{self.class}" unless filter_exists?(name)
+        # raise "A '#{name}' filter already exists for class #{self.class}" unless filter_exists?(name)
         custom_filters[name] = {
           proc: FilterEngine.get_named_lambda(field),
           all: %w(true false),
