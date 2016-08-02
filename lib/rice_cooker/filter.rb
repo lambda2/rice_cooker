@@ -6,7 +6,7 @@ module RiceCooker
 
     FILTER_PARAM = :filter
 
-    class Filter < RiceCooker::Base
+    class FilterEngine < RiceCooker::Base
 
       def self.action
         :filtering
@@ -34,7 +34,7 @@ module RiceCooker
 
       def parse_future_bool(fi)
         @params[:future] = {
-          proc: Filer.get_future_lambda("#{@model.quoted_table_name}.\"#{fi}\""),
+          proc: FilterEngine.get_future_lambda("#{@model.quoted_table_name}.\"#{fi}\""),
           all: %w(true false),
           description: "Return only #{@model.to_s.underscore.humanize.downcase.pluralize} which begins in the future"
         }
@@ -44,7 +44,7 @@ module RiceCooker
       def parse_named_bool(fi)
         name = fi.to_s.gsub(/_at$/, '')
         @params[name.to_sym] = {
-          proc: Filer.get_named_lambda(fi),
+          proc: FilterEngine.get_named_lambda(fi),
           all: %w(true false),
           description: "Return only #{name} #{@model.to_s.underscore.humanize.downcase.pluralize}"
         }
@@ -74,7 +74,7 @@ module RiceCooker
         cattr_accessor :filtering_keys
         cattr_accessor :custom_filters
 
-        filter = Filter.new(additional_filtering_params, resource_model)
+        filter = FilterEngine.new(additional_filtering_params, resource_model)
 
         filter.register_bools
 
@@ -116,7 +116,7 @@ module RiceCooker
       def register_bool_filter(name, field, description = nil)
         raise "A '#{name}' filter already exists for class #{self.class}" unless filter_exists?(name)
         custom_filters[name] = {
-          proc: Filter.get_named_lambda(field),
+          proc: FilterEngine.get_named_lambda(field),
           all: %w(true false),
           description: description || "Return only #{resource_model.to_s.underscore.humanize.downcase.pluralize} with a #{field}"
         }
