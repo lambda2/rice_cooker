@@ -57,6 +57,12 @@ The `range` parameter is a hash allowing filtering for a field, as a key, on two
 
 For example, the `api.example.org/unicorns?range[age]=21,42` url will return all the unicorns which are between **21** and **42** years old.
 
+### Searching
+
+The `search` parameter is a hash allowing searching for a field, as a key, on one or several, comma-separated, values. Only the fields containing the given search(es) will be returned (internally, safely executes a `WHERE field LIKE '%SEARCH%'` query).
+
+For example, the `api.example.org/unicorns?search[color]=e` url will return all the unicorns with a color containing the letter '**e**'.
+
 
 ## Specification
 
