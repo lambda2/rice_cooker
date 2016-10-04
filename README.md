@@ -67,3 +67,5 @@ For example, the `api.example.org/unicorns?search[color]=e` url will return all 
 ## Specification
 
 The gem try to follow the [RAPIS](https://github.com/lambda2/rapis) api convention.
+
+
