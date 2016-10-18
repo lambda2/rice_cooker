@@ -6,6 +6,13 @@ module RiceCooker
 
     def initialize_model_class!
       # First priority is the namespaced model, e.g. User::Group
+
+      # Handle InhRes computing
+      if self.respond_to? :resource_class
+        self.resource_model = self.resource_class
+        return self.resource_model
+      end
+
       self.resource_model ||= begin
         namespaced_class = name.sub(/Controller$/, '').singularize
         namespaced_class.constantize
