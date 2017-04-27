@@ -291,13 +291,13 @@ module RiceCooker
           query = col.model.arel_table[f.to_sym].matches("%#{value.to_s}%")
         when :integer
           query = col.model.arel_table[f.to_sym].eq(value.to_i)
-        when :boolean
-          query = false
+        # when :boolean
+        #   query = col.model.where(false)
         else
-          query = col.model.arel_table[f.to_sym].eq(value.to_s)
+          query = false
         end
 
-        reducer = (reducer ? reducer.or(query) : query)
+        reducer = (reducer ? reducer.or(query) : query) if query
       end
       col.where(reducer)
     end
