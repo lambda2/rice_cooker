@@ -274,6 +274,15 @@ module RiceCooker
       col.where(reducer)
     end
 
+    def reduce_fields_where(col, fields, value)
+      reducer = nil
+      fields.each do |f|
+        query = col.model.arel_table[f.to_sym].matches("%#{value.to_s}%")
+        reducer = (reducer ? reducer.or(query) : query)
+      end
+      col.where(reducer)
+    end
+
     def apply_search_to_collection(col, searching_params, additional = {})
       return col if col.nil?
 

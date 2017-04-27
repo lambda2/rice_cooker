@@ -30,6 +30,17 @@ module RiceCooker
         end
       end
 
+      def fuzzy_searched
+        cattr_accessor :searching_keys
+
+        # On recupere tous les filtres autorisés
+        self.searching_keys = searchable_fields_for(resource_model)
+        has_scope :fuzzy, only: [:index] do |_controller, scope, value|
+          scope = reduce_fields_where(scope, searching_keys, value)
+          scope
+        end
+      end
+
       # Ajoute un filtre custom
       #
       # name: le nom du filtre custom (ex: with_mark)
