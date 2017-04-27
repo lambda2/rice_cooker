@@ -286,7 +286,7 @@ module RiceCooker
     def reduce_fields_where(col, fields, value)
       reducer = nil
       fields.each do |f|
-        case columns.select{|e| e.name.to_sym == f.to_sym}.first.type
+        case col.model.columns.select{|e| e.name.to_sym == f.to_sym}.first.type
         when :string
           query = col.model.arel_table[f.to_sym].matches("%#{value.to_s}%")
         # when :integer
