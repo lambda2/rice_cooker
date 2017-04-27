@@ -289,10 +289,10 @@ module RiceCooker
         case col.model.columns.select{|e| e.name.to_sym == f.to_sym}.first.type
         when :string
           query = col.model.arel_table[f.to_sym].matches("%#{value.to_s}%")
-        # when :integer
-        #   query = col.model.arel_table[f.to_sym].eq(value.to_s)
-        # when :boolean
-        #   query = col.model.arel_table[f.to_sym].eq(value.to_s)
+        when :integer
+          query = col.model.arel_table[f.to_sym].eq(value.to_i)
+        when :boolean
+          query = false
         else
           query = col.model.arel_table[f.to_sym].eq(value.to_s)
         end
