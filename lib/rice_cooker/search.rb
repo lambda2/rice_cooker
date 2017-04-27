@@ -31,12 +31,12 @@ module RiceCooker
       end
 
       def fuzzy_searched
-        cattr_accessor :searching_keys
+        cattr_accessor :fuzzy_keys
 
         # On recupere tous les filtres autorisés
-        self.searching_keys = searchable_fields_for(resource_model)
+        self.fuzzy_keys = fuzzy_fields_for(resource_model)
         has_scope :fuzzy, only: [:index] do |_controller, scope, value|
-          scope = reduce_fields_where(scope, searching_keys, value)
+          scope = reduce_fields_where(scope, fuzzy_keys, value)
           scope
         end
       end

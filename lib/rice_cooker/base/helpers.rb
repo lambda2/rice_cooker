@@ -48,12 +48,21 @@ module RiceCooker
       end
     end
 
-    # Overridable method for available rangeable fields
+    # Overridable method for available searchable fields
     def searchable_fields_for(model)
       if model.respond_to?(:searchable_fields)
-        model.rangeable_fields.map(&:to_sym)
+        model.searchable_fields.map(&:to_sym)
       else
         filterable_fields_for(model)
+      end
+    end
+
+    # Overridable method for available fuzzy fields
+    def fuzzy_fields_for(model)
+      if model.respond_to?(:fuzzy_fields)
+        model.fuzzy_fields.map(&:to_sym)
+      else
+        searchable_fields_for(model)
       end
     end
 
@@ -277,7 +286,17 @@ module RiceCooker
     def reduce_fields_where(col, fields, value)
       reducer = nil
       fields.each do |f|
-        query = col.model.arel_table[f.to_sym].matches("%#{value.to_s}%")
+        case columns.select{|e| e.name.to_sym == f.to_sym}.first.type
+        when :string
+          query = col.model.arel_table[f.to_sym].matches("%#{value.to_s}%")
+        # when :integer
+        #   query = col.model.arel_table[f.to_sym].eq(value.to_s)
+        # when :boolean
+        #   query = col.model.arel_table[f.to_sym].eq(value.to_s)
+        else
+          query = col.model.arel_table[f.to_sym].eq(value.to_s)
+        end
+
         reducer = (reducer ? reducer.or(query) : query)
       end
       col.where(reducer)
@@ -290,7 +309,7 @@ module RiceCooker
         if additional.key?(field) && additional[field].key?(:proc)
           col = col.instance_exec(value, &(additional[field][:proc]))
         elsif value.is_a?(String)
-          col = col.where(col.model.arel_table[field.to_sym].matches("%#{value.join(' ')}%"))
+          col = (col.where(col.model.arel_table[field.to_sym].matches("%#{value.join(' ')}%")) rescue col)
         elsif value.is_a?(Array)
           col = reduce_where(col, field, value)
         elsif value.is_a?(Hash) && value.key?(:proc)
