@@ -186,6 +186,7 @@ module RiceCooker
       return collection if collection.nil?
 
       filtering_params.each do |field, value|
+        puts "Filtering param #{field} -> #{value}"
         if additional.key?(field) && additional[field].key?(:proc)
 
           # Si on a fourni des valeurs, on verifie qu'elle matchent
@@ -195,6 +196,8 @@ module RiceCooker
           end
 
           collection = collection.instance_exec(value, &(additional[field][:proc]))
+        elsif field =~ /_at$/ && (value.is_a?(String) || value.is_a?(Array))
+          collection = collection.where("DATE(#{field}) = ?", [*value])
         elsif value.is_a?(String) || value.is_a?(Array)
           collection = collection.where(field => value)
         elsif value.is_a?(Hash) && value.key?(:proc)
