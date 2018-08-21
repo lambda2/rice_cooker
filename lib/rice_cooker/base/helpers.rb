@@ -197,9 +197,9 @@ module RiceCooker
 
           collection = collection.instance_exec(value, &(additional[field][:proc]))
         elsif field =~ /_at$/ && (value.is_a?(String) || value.is_a?(Array))
-          collection = collection.where("DATE(#{field}) = ?", [*value])
+          collection = collection.where("DATE(#{collection.model.table_name}.#{field}) = ?", [*value])
         elsif value.is_a?(String) || value.is_a?(Array)
-          collection = collection.where(field => value)
+          collection = collection.where("#{collection.model.table_name}.#{field}" => value)
         elsif value.is_a?(Hash) && value.key?(:proc)
           collection
         end
@@ -368,7 +368,7 @@ module RiceCooker
         elsif value.is_a? Array
           from, to = value.slice(0, 2)
           begin
-            collection = collection.where(field => from..to)
+            collection = collection.where("#{collection.model.table_name}.#{field}" => from..to)
           rescue ArgumentError
             raise InvalidRangeValueException, "
               Unable to create a range between values '#{from}' and '#{to}'
